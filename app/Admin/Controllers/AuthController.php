@@ -6,5 +6,8 @@ use OpenAdmin\Admin\Controllers\AuthController as BaseAuthController;
 
 class AuthController extends BaseAuthController
 {
-
+    public function login()
+    {
+		return view('admin.login');
+		}
 }

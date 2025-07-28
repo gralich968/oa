@@ -15,7 +15,7 @@ class TbloutController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Tblout';
+    protected $title = 'List Scaning OUT';
 
     /**
      * Make a grid builder.

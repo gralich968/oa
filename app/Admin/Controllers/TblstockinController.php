@@ -6,7 +6,9 @@ use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
-use \App\Models\Tblstockin;
+use App\Models\Tblstockin;
+use App\Exports\ExportStockIn;
+use Excel;
 
 class TblstockinController extends AdminController
 {
@@ -15,7 +17,7 @@ class TblstockinController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Tblstockin';
+    protected $title = 'Stock IN List';
 
     /**
      * Make a grid builder.
@@ -23,19 +25,21 @@ class TblstockinController extends AdminController
      * @return Grid
      */
     protected function grid()
-    {       
+    {
+
         $grid = new Grid(new Tblstockin());
         $grid->fixHeader();
         $grid->disableCreateButton();
 
         $grid->tools(function ($tools) {
-            $tools->append("<a href='http://localhost:8000/pdfin' class='btn btn-secondary'>Create PDF</a>");
+            $tools->append("<a href='" . config('app.url') . "/pdfin' target='_blank' class='btn btn-primary'>Create PDF</a>");
+            $tools->append("<a href='" . config('app.url') . "/excel-export' target='_blank' class='btn btn-primary'>Export XLSX</a>");
              });
 
         $grid->rows(function ($row, $number) {
          $row->column('number', ++$number);
      });
-        $grid->number('ID')->totalRow('Total');        
+        $grid->number('ID')->totalRow('Total');
         //$grid->column('id', __('Id'));
         $grid->column('LCode', __('LCode'));
         $grid->column('sku', __('Sku'))->filter('like');
@@ -81,4 +85,9 @@ class TblstockinController extends AdminController
 
         return $form;
     }
+
+    public function excel_export()
+    {
+		return Excel::download(new ExportStockIn, 'stock_in.xlsx');
+		}
 }

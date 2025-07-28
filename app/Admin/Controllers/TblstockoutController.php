@@ -15,7 +15,7 @@ class TblstockoutController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Tblstockout';
+    protected $title = 'Stock OUT LIst';
 
     /**
      * Make a grid builder.
@@ -27,15 +27,15 @@ class TblstockoutController extends AdminController
         $grid = new Grid(new Tblstockout());
         $grid->fixHeader();
         $grid->disableCreateButton();
-        
+
         $grid->tools(function ($tools) {
-    $tools->append("<a href='http://localhost:8000/pdf' class='btn btn-secondary'>Create PDF</a>");
-     });
+        $tools->append("<a href='" . config('app.url') . "/pdf' target='_blank' class='btn btn-primary'>Create PDF</a>");
+        });
 
         $grid->rows(function ($row, $number) {
          $row->column('number', ++$number);
      });
-        $grid->number('ID')->totalRow('Total Boxes'); 
+        $grid->number('ID')->totalRow('Total Boxes');
         //$grid->column('id', __('Id'))->sortable();
         $grid->column('LCode', __('LCode'));
         $grid->column('sku', __('Sku'))->filter('like');

@@ -15,7 +15,7 @@ class TblinController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Tblin';
+    protected $title = 'List Scaning IN';
 
     /**
      * Make a grid builder.
