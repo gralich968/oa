@@ -14,14 +14,14 @@ class PDFController extends Controller
 		$tblstockin = Tblstockin::get();
 		
 		$data = [
-		       'title' => 'Siema',
+		       'title' => 'STOCK IN LIST',
 		       'date' => date('d/m/Y'),
 		       'time' => date('H:m'),
 		       'users' => $tblstockin
 		
 		];
 		$pdf = PDF::loadView('myPDF', $data);
-		return $pdf->download('stockin.pdf');
+		return $pdf->stream('stockin.pdf');
 		}
 		
 		public function viewPdf()

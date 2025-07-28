@@ -31,14 +31,15 @@ class TblstockoutController extends AdminController
         $grid->tools(function ($tools) {
     $tools->append("<a href='http://localhost:8000/pdf' class='btn btn-secondary'>Create PDF</a>");
      });
+
         $grid->rows(function ($row, $number) {
          $row->column('number', ++$number);
      });
-        $grid->number('ID'); 
+        $grid->number('ID')->totalRow('Total Boxes'); 
         //$grid->column('id', __('Id'))->sortable();
         $grid->column('LCode', __('LCode'));
-        $grid->column('sku', __('Sku'));
-        $grid->column('qty', __('Qty'));
+        $grid->column('sku', __('Sku'))->filter('like');
+        $grid->column('qty', __('Qty'))->totalRow();
         $grid->column('created_at', __('Created at'))->dateFormat('d-m-Y H:i:s');
         //$grid->column('updated_at', __('Updated at'));
 

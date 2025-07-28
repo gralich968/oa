@@ -6,6 +6,7 @@
     <style>
         body {
             font-family: 'Arial, sans-serif';
+            font-size: 16px;
         }
         .container {
             margin: 0 auto;
@@ -14,27 +15,44 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
+            
         }
         .content {
-            font-size: 12px;
+            font-size: 16px;
         }
+        table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table, th, td {
+  border: 1px solid black;
+  text-align: center;
+}
+
+th, td {
+  padding: 5px;
+}
+        
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>{{ $title }}</h1>
-            <p>Date: {{ $date }}</p>
+            <p>Create at: {{ $date }} {{ $time }}</p>
         </div>
         <div class="content">
-			<table class="table table-bordered">
+			<table>
+            <thead>    
 			<tr>
 			  <th>ID</th>
 			  <th>L_Code</th>
 			  <th>SKU</th>
 			  <th>QTY</th>
 			  <th>Created</th>
-			</tr>	
+			</tr>
+            </thead>	
 			@foreach($users as $value)
             <tr>
               <td>{{ $value->id }}</td>
