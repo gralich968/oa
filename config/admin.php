@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Montana Bakery',
+    'name' => 'IMS-APP',
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<b>Montana</b> Bakery',
+    'logo' => '<b>Inventory</b> Management System',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<b>MB</b>',
+    'logo-mini' => '<b>IMS</b>',
 
     /*
     |--------------------------------------------------------------------------
@@ -85,7 +85,7 @@ return [
     | Html title for all pages.
     |
     */
-    'title' => 'Admin',
+    'title' => 'Gralich',
 
     /*
     |--------------------------------------------------------------------------

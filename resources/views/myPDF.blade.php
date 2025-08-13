@@ -15,10 +15,10 @@
         .header {
             text-align: center;
             margin-bottom: 20px;
-            
+
         }
         .content {
-            font-size: 16px;
+            font-size: 18px;
         }
         table {
   border-collapse: collapse;
@@ -26,14 +26,14 @@
 }
 
 table, th, td {
-  border: 1px solid black;
+  border: 2px solid black;
   text-align: center;
 }
 
 th, td {
   padding: 5px;
 }
-        
+
     </style>
 </head>
 <body>
@@ -44,7 +44,7 @@ th, td {
         </div>
         <div class="content">
 			<table>
-            <thead>    
+            <thead>
 			<tr>
 			  <th>ID</th>
 			  <th>L_Code</th>
@@ -52,14 +52,14 @@ th, td {
 			  <th>QTY</th>
 			  <th>Created</th>
 			</tr>
-            </thead>	
+            </thead>
 			@foreach($users as $value)
             <tr>
               <td>{{ $value->id }}</td>
               <td>{{ $value->LCode }}</td>
               <td>{{ $value->sku }}</td>
               <td>{{ $value->qty }}</td>
-              <td>{{ $value->created_at }}</td>              
+              <td>{{ $value->created_at }}</td>
             </tr>
             @endforeach
             </table>

@@ -52,17 +52,17 @@ $previousRow = $rowArray;
 
             if (count($rowArray) >= 12) {
 
-        $orderDate = $this->formatExcelDate($rowArray[2]);
-        $dueDate = $this->formatExcelDate($rowArray[4]);
+        //$orderDate = $this->formatExcelDate($rowArray[2]);
+        //$dueDate = $this->formatExcelDate($rowArray[4]);
 
                 $insert_data[] = [
                     'companyCode'           => $rowArray[0],
                     'orderNumber'           => $rowArray[1],
-                    'orderDate'             => $orderDate,
+                    'orderDate'             => $this->formatExcelDate($rowArray[2]),
                     'partnerRef'            => $rowArray[3],
-                    'dueDate'               => $dueDate,
+                    'dueDate'               => $this->formatExcelDate($rowArray[4]),
                     'orderType'             => $rowArray[5],
-                    'positionsposid'        => $rowArray[6],
+                    'positionsposId'        => $rowArray[6],
                     'positioncompanyCode'   => $rowArray[7],
                     'itemNumber'            => $rowArray[8],
                     'requestQty'            => $rowArray[9],

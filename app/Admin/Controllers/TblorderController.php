@@ -29,6 +29,7 @@ class TblorderController extends AdminController
     {
         $grid = new Grid(new Tblorder());
         $grid->fixHeader();
+        $grid->disableActions();
         // Group by partnerRef and select only necessary fields
        $grid->model()
     ->join('tbldestinations', 'tblorder.partnerRef', '=', 'tbldestinations.depo_code')
@@ -42,30 +43,33 @@ class TblorderController extends AdminController
         $grid->tools(function ($tools) {
         $tools->append("<a href='" . config('app.url') . "/import_order' class='btn btn-primary'>Import Order</a>");
         $tools->append('<a href="/admin/truncate-order" class="btn btn-danger">Truncate Order</a>');
+        $tools->append('<a href="/admin/orders/print" target="_blank" class="btn btn-success">Print Order</a>');
 
      });
 
         $grid->column('depoName', 'Depo Name')->expand(function ($model) {
-    $orders = Tblorder::where('partnerRef', $model->partnerRef)->get();
+        $orders = Tblorder::where('partnerRef', $model->partnerRef)->get();
 
     $rows = $orders->map(function ($order) {
         return [
+            $order->positionsposId,
             $order->orderNumber,
             \Carbon\Carbon::parse($order->orderDate)->format('d-m-Y'),
             \Carbon\Carbon::parse($order->dueDate)->format('d-m-Y'),
-            $order->itemNumber,
+            optional($order->product)->description,
             $order->requestQty,
             $order->sparenumber1,
         ];
     });
 
     return new Table([
+        'Position',
         'Order Number',
         'Order Date',
         'Due Date',
-        'Item Number',
+        'Product',
         'Request Qty',
-        'Spare Number'
+        'UPT'
     ], $rows->toArray());
 });
 return $grid;

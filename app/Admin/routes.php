@@ -8,6 +8,8 @@ use App\Admin\Controllers\TblstockoutController;
 use App\Admin\Controllers\TblproductsController;
 use App\Admin\Controllers\TblorderController;
 use App\Admin\Controllers\TbldestinationsController;
+use App\Admin\Controllers\TblpickingsController;
+use App\Admin\Controllers\TblpickingsResultsController;
 use OpenAdmin\Admin\Facades\Admin;
 
 Admin::routes();
@@ -31,6 +33,8 @@ Route::group([
     $router->resource('tblproducts', TblproductsController::class);
     $router->resource('tblorders', TblorderController::class);
     $router->resource('tbldestinations', TbldestinationsController::class);
+    $router->resource('tblpickings', TblpickingsController::class);
+    $router->resource('tblpickings-results', TblpickingsResultsController::class);
     //inventory end
 
 });

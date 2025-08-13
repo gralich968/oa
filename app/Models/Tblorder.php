@@ -24,4 +24,11 @@ class Tblorder extends Model
            'positionuom',
            'sparenuber1',
     ];
+    public function product()
+{
+    return $this->hasOne(Tblproducts::class, 'sku', 'itemNumber');
 }
+
+}
+
+
