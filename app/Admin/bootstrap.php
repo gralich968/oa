@@ -22,3 +22,4 @@ use OpenAdmin\Admin\Facades\Admin;
 
 OpenAdmin\Admin\Form::forget(['editor']);
 Admin::js('https://cdn.jsdelivr.net/npm/chart.js');
+

@@ -2,14 +2,15 @@
 
 namespace App\Admin\Controllers;
 
+use App\Exports\ExportTblpickingsResults;
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
-use \App\Models\Tblpickings;
+use App\Models\Tblpickings;
 use App\Models\TblpickingsResults;
 use Illuminate\Support\Facades\DB;
-
+use Excel;
 
 class TblpickingsController extends AdminController
 {
@@ -30,6 +31,7 @@ class TblpickingsController extends AdminController
         $grid = new Grid(new TblpickingsResults());
         $grid->fixHeader();
         $grid->disableActions();
+        $grid->disableExport();
         $grid->rows(function ($row, $number) {
          $row->column('number', ++$number);
          });
@@ -40,6 +42,7 @@ class TblpickingsController extends AdminController
         $tools->append('<a href="/admin/pickings/print" target="_blank" class="btn btn-success">Print Pickings</a>');
         $tools->append('<a href="https://www.ilovepdf.com/pdf_to_excel" target="_blank" class="btn btn-info">Convert PDF to XLSX</a>');
         $tools->append("<a href='" . config('app.url') . "/upload' class='btn btn-primary'>Merge PDFs</a>");
+        $tools->append("<a href='" . config('app.url') . "/pickings-export' target='_blank' class='btn btn-primary'>Export XLSX</a>");
 
      });
 
@@ -67,7 +70,7 @@ class TblpickingsController extends AdminController
             ->sum('tblpickingsresult.quantity_sum');
 
             return "<center><div style='margin-bottom:10px; font-weight: bold; font-size: 16px;'>
-            ** Trays Ordered: {$totalTraysOrdered} | Trays Picked: {$totalTraysPicked} | <span style='color: yellow;'>Trays Remaining: {$totalTraysRemaining}</span> ** | <i style='color: green;'>== Dollies: {$dollies} Tracks: {$divided} ==</i>
+            ** Trays Ordered: {$totalTraysOrdered} | Trays Picked: {$totalTraysPicked} | <span style='color: grey;'>Trays Remaining: {$totalTraysRemaining}</span> ** | <i style='color: green;'>== Dollies: {$dollies} Tracks: {$divided} ==</i>
             <br>
             <span style='color: blue;'>Total Half Trays (trayod=36): {$sum36} | Total Metrics Trays (trayod=18): {$sum18}</span>
             </div></center>";
@@ -150,4 +153,9 @@ class TblpickingsController extends AdminController
 
         return $form;
     }
+
+     public function excel_export()
+    {
+		return Excel::download(new ExportTblpickingsResults, 'tblpickings.xlsx');
+		}
 }

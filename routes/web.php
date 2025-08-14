@@ -4,13 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PDFController;
 use App\Admin\Controllers\TblstockinController;
 use App\Admin\Controllers\AuthController;
+use App\Admin\Controllers\TblpickingsController;
 use App\Http\Controllers\ImportDestinationsController;
 use App\Http\Controllers\ImportOrderController;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PrintOrdersController;
 use App\Http\Controllers\ImportPickingsController;
-use Illuminate\View\View;
+
+
 
 Admin::routes();
 
@@ -18,12 +20,13 @@ Route::get('/', [AuthController::class, 'login']);
 Route::get('pdf', [PDFController::class, 'viewPdf']);
 Route::get('pdfin', [PDFController::class, 'generatePDF']);
 Route::get('excel-export', [TblstockinController::class, 'excel_export']);
+Route::get('pickings-export', [TblpickingsController::class, 'excel_export']);
 
 
 Route::get('admin/truncate-order', function () {
     DB::table('tblorder')->truncate();
     admin_toastr('Table truncated!', 'success');
-    return redirect('admin/tblorders');
+    return redirect(admin_url('tblorders'));
 });
 Route::get('/import_order', [ImportOrderController::class, 'index']);
 Route::post('/import_order/import', [ImportOrderController::class, 'import']);

@@ -38,21 +38,6 @@ class ImportPickingsController extends Controller
         foreach ($rows->Skip(1) as $row) {
             $rowArray = $row->toArray();
 
-    //        // If the row is completely empty, set all values to null
-    //        if (empty(array_filter($rowArray, function($cell) { return $cell !== null && $cell !== ''; }))) {
-    //            $rowArray = array_fill(0, count($rowArray), null);
-    //        } else {
-    //            // Fill empty cells with data above
-    //            if ($previousRow !== null) {
-    //                foreach ($rowArray as $index => $cell) {
-    //                    if (empty($cell) && isset($previousRow[$index])) {
-    //                        $rowArray[$index] = $previousRow[$index];
-    //                    }
-    //                }
-    //            }
-    //        }
-    //        $previousRow = $rowArray;
-//
          // Only insert rows where quantity > 0 and row is not completely null
           if ($rowArray[2] !== null && (float)$rowArray[2] > 0) {
                 $insert_data[] = [
