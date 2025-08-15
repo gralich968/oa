@@ -30,6 +30,7 @@ class TblorderController extends AdminController
         $grid = new Grid(new Tblorder());
         $grid->fixHeader();
         $grid->disableActions();
+        $grid->disableExport();
         // Group by partnerRef and select only necessary fields
        $grid->model()
     ->join('tbldestinations', 'tblorder.partnerRef', '=', 'tbldestinations.depo_code')
