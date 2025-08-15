@@ -60,7 +60,7 @@ public function merge(Request $request)
     $pdfMerger->merge();
     $pdfMerger->save($mergedPath);
 
-    return response()->download($mergedPath)->deleteFileAfterSend(false);
+    return response()->download($mergedPath)->deleteFileAfterSend(true);
     // Optionally, you can redirect back with a success message
     return redirect()->back()->with('success', 'PDFs merged successfully!');
 
