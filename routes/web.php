@@ -57,7 +57,7 @@ Route::get('/admin/pickings/print', [PrintOrdersController::class, 'printPicking
 Route::get('/upload', function () {
     return view('upload');
 });
-Route::post('/merge-pdfs', [PDFController::class, 'merge'])->name('pdf.merge');
+Route::post('/upload', [PDFController::class, 'merge'])->name('pdf.merge');
 
 
 
