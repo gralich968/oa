@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Laravel PDF Example</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrat.min.css" >
+    <title>PDF Print</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" >
     <style>
         body {
             font-family: 'Arial, sans-serif';
@@ -42,14 +42,38 @@ th, td {
         <div style="text-align: left;">
             <div class="deponame">
             <h1>{{ $depo['depoName'] }}</h1>
-            <p>Depo Date: {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY') }}</p>
+            <p>Depo Date: <strong>{{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong></p>
+            <p>Po Number: <strong>{{ $depo['poNumber'] }}</strong></p>
+
+ @foreach($depo['orders'] as $order)
+             @php
+                    // Calculate trayod sums once per partnerRef
+                    $sum36 = \App\Models\Tblorder::join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
+                        ->where('tblorder.partnerRef', $order->partnerRef)
+                        ->where('tblproducts.trayod', 36)
+                        ->sum('tblorder.requestQty');
+
+                    $sum18 = \App\Models\Tblorder::join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
+                        ->where('tblorder.partnerRef', $order->partnerRef)
+                        ->where('tblproducts.trayod', 18)
+                        ->sum('tblorder.requestQty');
+                @endphp
+                @endforeach
+
+@if ($sum36 > 0 || $sum18 > 0)
+    <div style="margin-bottom:10px;">
+        Total Qty (HalfTrays = 36):  <strong>{{ $sum36 }}</strong><br>
+        Total Qty (MetricsTrays = 18):  <strong>{{ $sum18 }}</strong>
+    </div>
+@endif
+
+
             </div>
         </div>
         <div style="text-align: right;">
             <div class="code"><br />
                 <img src="data:image/png;base64,{!! $depo['barcode'] !!}" width="300" height="100">
-                <br />
-                {{ 'Po No: (400)'.$depo['poNumber'] }}
+                <p>{{ '(400)'.$depo['poNumber'] }}</p>
             </div>
         </div>
     </div>

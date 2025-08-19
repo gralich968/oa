@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tbldestinations;
 use App\Models\Tblorder;
 use App\Models\TblpickingsResults;
-use PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PrintOrdersController extends Controller
 {
@@ -57,6 +57,32 @@ public function printPickingList()
     $pdf = PDF::loadView('admin.pickings.print', compact('data', 'totals'));
     return $pdf->stream('picking-list.pdf');
 }
+
+
+
+public function printPartner($partnerRef)
+{
+    $generatorHTML = new BarcodeGeneratorPNG();
+
+    $orders = Tblorder::where('partnerRef', $partnerRef)->get();
+    $poNumber = Tblorder::where('partnerRef', $partnerRef)->value('orderNumber');
+    $depoName = Tbldestinations::where('depo_code', $partnerRef)->value('depo_name');
+    $dueDate = Tblorder::where('partnerRef', $partnerRef)->orderByDesc('dueDate')->value('dueDate');
+    $barcode = base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39));
+
+    // Generate PDF from Blade view
+    $pdf = Pdf::loadView('admin.orders.print-partner', compact(
+        'orders',
+        'partnerRef',
+        'poNumber',
+        'depoName',
+        'dueDate',
+        'barcode'
+    ));
+
+    return $pdf->stream('partner-orders.pdf'); // or ->download() to force download
+}
+
 
 
 }

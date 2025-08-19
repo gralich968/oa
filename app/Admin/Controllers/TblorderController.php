@@ -49,33 +49,36 @@ class TblorderController extends AdminController
      });
 
         $grid->column('depoName', 'Depo Name')->expand(function ($model) {
-        $orders = Tblorder::where('partnerRef', $model->partnerRef)->get();
+            $orders = Tblorder::where('partnerRef', $model->partnerRef)->get();
 
-    $rows = $orders->map(function ($order) {
-        return [
-            $order->positionsposId,
-            $order->orderNumber,
-            \Carbon\Carbon::parse($order->orderDate)->format('d-m-Y'),
-            \Carbon\Carbon::parse($order->dueDate)->format('d-m-Y'),
-            optional($order->product)->description,
-            $order->requestQty,
-            $order->sparenumber1,
-        ];
-    });
+            $rows = $orders->map(function ($order) {
+            return [
+                $order->positionsposId,
+                $order->orderNumber,
+                \Carbon\Carbon::parse($order->orderDate)->format('d-m-Y'),
+                \Carbon\Carbon::parse($order->dueDate)->format('d-m-Y'),
+                optional($order->product)->description,
+                $order->requestQty,
+                $order->sparenumber1,
+            ];
+            });
 
-    return new Table([
-        'Position',
-        'Order Number',
-        'Order Date',
-        'Due Date',
-        'Product',
-        'Request Qty',
-        'UPT'
-    ], $rows->toArray());
-});
-return $grid;
+            // Add PDF print button for this partnerRef
+            $printUrl = url("/admin/orders/print-partner/" . $model->partnerRef);
+            $button = "<a href='{$printUrl}' target='_blank' class='btn btn-success btn-sm' style='margin-bottom:10px;'>Print Order</a>";
+
+            return $button . (new Table([
+            'Position',
+            'Order Number',
+            'Order Date',
+            'Due Date',
+            'Product',
+            'Request Qty',
+            'UPT'
+            ], $rows->toArray()));
+        });
+        return $grid;
     }
-
     /**
      * Make a show builder.
      *

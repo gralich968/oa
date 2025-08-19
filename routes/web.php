@@ -58,6 +58,8 @@ Route::get('/upload', function () {
     return view('upload');
 });
 Route::post('/upload', [PDFController::class, 'merge'])->name('pdf.merge');
+Route::get('/admin/orders/print-partner/{partnerRef}', [PrintOrdersController::class, 'printPartner']);
+
 
 
 
