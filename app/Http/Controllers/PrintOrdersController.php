@@ -23,12 +23,12 @@ $data = $partnerRefs->map(function ($ref) use ($generatorHTML) {
 
     return [
         'depoName' => Tbldestinations::where('depo_code', $ref->partnerRef)->value('depo_name'),
-        'orders' => Tblorder::where('partnerRef', $ref->partnerRef)->get(),
+        'orders' => Tblorder::where('partnerRef', $ref->partnerRef)->orderBy('positionsposId', 'asc')->get(),
         'dueDate' => Tblorder::where('partnerRef', $ref->partnerRef)
             ->orderByDesc('dueDate')
             ->value('dueDate'),
         'poNumber' => $poNumber,
-        'barcode' => base64_encode($generatorHTML->getBarcode('400'.$poNumber, $generatorHTML::TYPE_CODE_39)),
+        'barcode' => base64_encode($generatorHTML->getBarcode('400' .$poNumber, $generatorHTML::TYPE_CODE_39)),
     ];
 
 
@@ -64,7 +64,7 @@ public function printPartner($partnerRef)
 {
     $generatorHTML = new BarcodeGeneratorPNG();
 
-    $orders = Tblorder::where('partnerRef', $partnerRef)->get();
+    $orders = Tblorder::where('partnerRef', $partnerRef)->orderBy('positionsposId', 'asc')->get();
     $poNumber = Tblorder::where('partnerRef', $partnerRef)->value('orderNumber');
     $depoName = Tbldestinations::where('depo_code', $partnerRef)->value('depo_name');
     $dueDate = Tblorder::where('partnerRef', $partnerRef)->orderByDesc('dueDate')->value('dueDate');

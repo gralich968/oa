@@ -39,17 +39,22 @@ class TblorderController extends AdminController
         'tbldestinations.depo_name as depoName', // assuming this is the column holding the depo name
         DB::raw('MAX(tblorder.id) as id')
     )
-    ->groupBy('tblorder.partnerRef', 'tbldestinations.depo_name');
+    ->groupBy('tblorder.partnerRef', 'tbldestinations.depo_name')
+    ->orderBy('tblorder.partnerRef');
 
         $grid->tools(function ($tools) {
         $tools->append("<a href='" . config('app.url') . "/import_order' class='btn btn-primary'>Import Order</a>");
-        $tools->append('<a href="/admin/truncate-order" class="btn btn-danger">Truncate Order</a>');
+        $tools->append('<a href="/admin/truncate-order" class="btn btn-danger">Delete Order</a>');
         $tools->append('<a href="/admin/orders/print" target="_blank" class="btn btn-success">Print Order</a>');
 
      });
 
         $grid->column('depoName', 'Depo Name')->expand(function ($model) {
-            $orders = Tblorder::where('partnerRef', $model->partnerRef)->get();
+
+$orders = Tblorder::where('partnerRef', $model->partnerRef)
+    ->orderBy('positionsposId', 'asc') // Sort by positionsposId in ascending order
+    ->get();
+
 
             $rows = $orders->map(function ($order) {
             return [
