@@ -72,7 +72,26 @@ $orders = Tblorder::where('partnerRef', $model->partnerRef)
             $printUrl = url("/admin/orders/print-partner/" . $model->partnerRef);
             $button = "<a href='{$printUrl}' target='_blank' class='btn btn-success btn-sm' style='margin-bottom:10px;'>Print Order</a>";
 
-            return $button . (new Table([
+// Custom header HTML
+ $sum36 = DB::table('tblorder')
+            ->where('partnerRef', $model->partnerRef)
+            ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
+            ->where('tblproducts.trayod', 36)
+            ->sum('tblorder.requestQty');
+
+            $sum18 = DB::table('tblorder')
+            ->where('partnerRef', $model->partnerRef)
+            ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
+            ->where('tblproducts.trayod', 18)
+            ->sum('tblorder.requestQty');
+
+            $half = $sum36 / 36;
+            $full = $sum18 / 18;
+            $totalhf = ceil($half + $full);
+    $customHeader = "<h4 style='margin-top:10px;'>Half Tray: <strong>{$sum36}</strong> | Full Tray: <strong>{$sum18}</strong> | Total Dollies: <strong>{$totalhf}</strong></h4>";
+
+
+            return $button . $customHeader . (new Table([
             'Position',
             'Order Number',
             'Order Date',

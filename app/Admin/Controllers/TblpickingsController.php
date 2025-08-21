@@ -91,8 +91,6 @@ class TblpickingsController extends AdminController
         $grid->column('remaining', __('<center><b>Remaining</b></center>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
             return "<span style='color: red; font-weight: bold;'> **Trays Remaining: $query** </span>";
         });
-        //$grid->column('sku', __('SKU'));
-
         $grid->column('trayod', __('<center><b>Dollies</b></center>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
             $dollies = $query;
             $divided = ceil($query / 64);
@@ -101,15 +99,6 @@ class TblpickingsController extends AdminController
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
 
-        // Add total for quantity_sum
-       // $grid->footer(function ($query) {
-       //     $totalQuantity = $query->sum('quantity_sum');
-       //     $totalPicked = $query->sum('picked_sum');
-       //     $totalRemaining = $query->sum('remaining');
-       //     return "<tr><td colspan='2'><strong>Total Quantity:</strong></td><td><strong> {$totalQuantity}   </strong></td><td colspan='3'></td></tr>
-       //             <tr><td colspan='2'><strong>Total Picked:</strong></td><td><strong> {$totalPicked}   </strong></td><td colspan='3'></td></tr>
-       //             <tr><td colspan='2'><strong>Total Remaining:</strong></td><td><strong> {$totalRemaining}   </strong></td><td colspan='3'></td></tr>";
-       // });
 
         return $grid;
     }
