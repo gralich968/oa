@@ -95,7 +95,7 @@ float: right;
                     <td>{{ $order->positionsposId }}</td>
                     <td>
                         @php
-                            $product = \App\Models\tblproducts::where('sku', $order->itemNumber)->first();
+                            $product = \App\Models\Tblproducts::where('sku', $order->itemNumber)->first();
                         @endphp
                         @if($product)
                             <small>{{ $order->itemNumber }} - {{ $product->description }}</small>
