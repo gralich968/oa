@@ -81,12 +81,12 @@ float: right;
         <div class="content">
     <table>
         <tr>
-          <th>Position</th>
-          <th style="width: 45%">Product</th>
-          <th>Qty</th>
-          <th>NOTE</th>
-          <th>UPT</th>
-          <th>SLIFE</th>
+           <th style="width: 10%">POSITION</th>
+           <th style="width: 45%">PRODUCT</th>
+           <th style="width: 5%">QTY</th>
+           <th>NOTE</th>
+           <th style="width: 5%">UPT</th>
+           <th style="width: 15%">SLIFE</th>
         </tr>
         <tbody>
 
