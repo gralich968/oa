@@ -36,10 +36,11 @@ class TblorderController extends AdminController
     ->join('tbldestinations', 'tblorder.partnerRef', '=', 'tbldestinations.depo_code')
     ->select(
         'tblorder.partnerRef',
+        'tblorder.dueDate',
         'tbldestinations.depo_name as depoName', // assuming this is the column holding the depo name
         DB::raw('MAX(tblorder.id) as id')
     )
-    ->groupBy('tblorder.partnerRef', 'tbldestinations.depo_name')
+    ->groupBy('tblorder.partnerRef', 'tbldestinations.depo_name', 'tblorder.dueDate')
     ->orderBy('tblorder.partnerRef');
 
         $grid->tools(function ($tools) {
@@ -48,12 +49,17 @@ class TblorderController extends AdminController
         $tools->append('<a href="/admin/orders/print" target="_blank" class="btn btn-success">Print Order</a>');
 
      });
+        $grid->column('dueDate', 'Due Date')->display(function ($date) {
+        return \Carbon\Carbon::parse($date)->format('d-m-Y');
+        })->sortable();
 
         $grid->column('depoName', 'Depo Name')->expand(function ($model) {
 
-$orders = Tblorder::where('partnerRef', $model->partnerRef)
-    ->orderBy('positionsposId', 'asc') // Sort by positionsposId in ascending order
-    ->get();
+         $orders = Tblorder::where('partnerRef', $model->partnerRef)
+         ->whereDate('dueDate', $model->dueDate)
+         ->orderBy('positionsposId', 'asc')
+         ->get();
+
 
 
             $rows = $orders->map(function ($order) {
@@ -69,27 +75,36 @@ $orders = Tblorder::where('partnerRef', $model->partnerRef)
             });
 
             // Add PDF print button for this partnerRef
-            $printUrl = url("/admin/orders/print-partner/" . $model->partnerRef);
+            $printUrl = url("/admin/orders/print-partner/" . $model->partnerRef . "?dueDate=" . $model->dueDate);
             $button = "<a href='{$printUrl}' target='_blank' class='btn btn-success btn-sm' style='margin-bottom:10px;'>Print Order</a>";
 
 // Custom header HTML
- $sum36 = DB::table('tblorder')
-            ->where('partnerRef', $model->partnerRef)
-            ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
-            ->where('tblproducts.trayod', 36)
-            ->sum('tblorder.requestQty');
+$groupedSums = DB::table('tblorder')
+    ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
+    ->selectRaw('tblorder.dueDate,
+                 SUM(CASE WHEN tblproducts.trayod = 36 THEN tblorder.requestQty ELSE 0 END) as sum36,
+                 SUM(CASE WHEN tblproducts.trayod = 18 THEN tblorder.requestQty ELSE 0 END) as sum18')
+    ->where('tblorder.partnerRef', $model->partnerRef)
+    ->whereDate('tblorder.dueDate', $model->dueDate)
+    ->groupBy('tblorder.dueDate')
+    ->orderBy('tblorder.dueDate')
+    ->get();
 
-            $sum18 = DB::table('tblorder')
-            ->where('partnerRef', $model->partnerRef)
-            ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
-            ->where('tblproducts.trayod', 18)
-            ->sum('tblorder.requestQty');
 
-            $half = $sum36 / 36;
-            $full = $sum18 / 18;
-            $totalhf = ceil($half + $full);
-    $customHeader = "<h4 style='margin-top:10px;'>Half Tray: <strong>{$sum36}</strong> | Full Tray: <strong>{$sum18}</strong> | Total Dollies: <strong>{$totalhf}</strong></h4>";
+    $customHeader = '';
 
+foreach ($groupedSums as $group) {
+    $half = $group->sum36 / 36;
+    $full = $group->sum18 / 18;
+    $totalhf = ceil($half + $full);
+
+    $customHeader .= "<h4 style='margin-top:10px;'>
+        Due Date: <strong>{$group->dueDate}</strong><br>
+        Half Tray: <strong>{$group->sum36}</strong> |
+        Full Tray: <strong>{$group->sum18}</strong> |
+        Total Dollies: <strong>{$totalhf}</strong>
+    </h4>";
+}
 
             return $button . $customHeader . (new Table([
             'Position',

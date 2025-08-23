@@ -33,50 +33,48 @@ table, th, td {
 th, td {
   padding: 5px;
 }
+#hp  {
+float: right;
+ margin: -100px 0 0 5px;
+}
 
     </style>
 </head>
 <body>
 @foreach($data as $depo)
-    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100%;">
+    <div>
         <div style="text-align: left;">
             <div class="deponame">
-            <h1>{{ $depo['depoName'] }}</h1>
-            <p>Depo Date: <strong>{{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong></p>
-            <p>Po Number: <strong>{{ $depo['poNumber'] }}</strong></p>
+            <center><h1>{{ $depo['depoName'] }}</h1></center>
+            <strong>Depo Date:   {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong><br>
+            <strong>Po Number:   {{ $depo['poNumber'] }}</strong><br>
 
  @foreach($depo['orders'] as $order)
              @php
                     // Calculate trayod sums once per partnerRef
-                    $sum36 = \App\Models\Tblorder::join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
-                        ->where('tblorder.partnerRef', $order->partnerRef)
-                        ->where('tblproducts.trayod', 36)
-                        ->sum('tblorder.requestQty');
-
-                    $sum18 = \App\Models\Tblorder::join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
-                        ->where('tblorder.partnerRef', $order->partnerRef)
-                        ->where('tblproducts.trayod', 18)
-                        ->sum('tblorder.requestQty');
-                @endphp
+                   $groupedSums = DB::table('tblorder')
+    ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
+    ->selectRaw('tblorder.dueDate,
+                 SUM(CASE WHEN tblproducts.trayod = 36 THEN tblorder.requestQty ELSE 0 END) as sum36,
+                 SUM(CASE WHEN tblproducts.trayod = 18 THEN tblorder.requestQty ELSE 0 END) as sum18')
+    ->where('tblorder.partnerRef', $order->partnerRef)
+    ->whereDate('tblorder.dueDate', $order->dueDate)
+    ->groupBy('tblorder.dueDate')
+    ->orderBy('tblorder.dueDate')
+    ->get();
+    $dollies = $groupedSums->sum('sum36') / 36 + $groupedSums->sum('sum18') / 18;
+            @endphp
                 @endforeach
 
-@if ($sum36 > 0 || $sum18 > 0)
+@if ($groupedSums->isNotEmpty())
     <div style="margin-bottom:10px;">
-        Total Qty (HalfTrays = 36):  <strong>{{ $sum36 }}</strong><br>
-        Total Qty (MetricsTrays = 18):  <strong>{{ $sum18 }}</strong>
-    </div>
+        <strong>Total Qty (HalfTrays = 36):   {{ $groupedSums->sum('sum36') }}</strong><br>
+        <strong>Total Qty (MetricsTrays = 18):   {{ $groupedSums->sum('sum18') }}</strong><br>
+        <strong>Dollies:   {{ ceil($dollies) }} </strong>
 @endif
-
-
+ <div class="flex-container">
+                <img src="data:image/png;base64,{!! $depo['barcode'] !!}" width="300" height="100" id="hp">
             </div>
-        </div>
-        <div style="text-align: right;">
-            <div class="code"><br />
-                <img src="data:image/png;base64,{!! $depo['barcode'] !!}" width="300" height="100">
-                <p>{{ '(400)'.$depo['poNumber'] }}</p>
-            </div>
-        </div>
-    </div>
 
     <br />
 
@@ -125,7 +123,11 @@ th, td {
     </table>
     </div>
     </div>
-    <div style="page-break-after: always;"></div>
+
+@if (!$loop->last)
+        <div style="page-break-after: always;"></div>
+    @endif
+
 @endforeach
 </body>
 </html>
