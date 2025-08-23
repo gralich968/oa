@@ -45,8 +45,8 @@ float: right;
     <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100%;">
         <div style="text-align: left;">
             <div class="deponame">
-            <center><h1>{{ $depo['depoName'] }} - {{ $depo['dueDate'] }}</h1></center>
-           <!-- <strong>Depo Date:   {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong><br>-->
+            <center><h1>{{ $depo['depoName'] }}</h1></center>
+           <strong>Depo Date:   {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong><br>
             <strong>Po Number:   {{ $depo['poNumber'] }}</strong><br>
 
             @foreach($depo['orders'] as $order)
