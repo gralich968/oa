@@ -39,21 +39,30 @@ class ImportOrderController extends Controller
         foreach ($rows->Skip(1) as $row) {
             $rowArray = $row->toArray();
 
-            // Fill completely empty rows with data above
-            if ($previousRow !== null) {
-    foreach ($rowArray as $index => $cell) {
-        if (empty($cell) && isset($previousRow[$index])) {
-            $rowArray[$index] = $previousRow[$index];
+
+ // Fill empty cells with previous row's data
+    if ($previousRow !== null) {
+        foreach ($rowArray as $index => $cell) {
+            if (empty($cell)) {
+                // If it's requestQty column (index 9), set to 0
+                if ($index === 9) {
+                    $rowArray[$index] = 0;
+                } elseif (isset($previousRow[$index])) {
+                    $rowArray[$index] = $previousRow[$index];
+                }
+            }
+        }
+    } else {
+        // Handle first row: if requestQty is empty, set to 0
+        if (empty($rowArray[9])) {
+            $rowArray[9] = 0;
         }
     }
-}
+
 $previousRow = $rowArray;
 
 
             if (count($rowArray) >= 12) {
-
-        //$orderDate = $this->formatExcelDate($rowArray[2]);
-        //$dueDate = $this->formatExcelDate($rowArray[4]);
 
                 $insert_data[] = [
                     'companyCode'           => $rowArray[0],
