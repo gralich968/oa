@@ -28,7 +28,7 @@ class TbldestinationsController extends AdminController
 
         $grid->tools(function ($tools) {
         $tools->append("<a href='" . config('app.url') . "/import_destinations' class='btn btn-primary'>Import Destinations</a>");
-        $tools->append('<a href="/admin/truncate-destinations" class="btn btn-danger">Truncate Order</a>');
+        //$tools->append('<a href="/admin/truncate-destinations" class="btn btn-danger">Truncate Order</a>');
         });
 
         $grid->column('id', __('Id'));

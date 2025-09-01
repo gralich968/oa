@@ -12,6 +12,8 @@ use App\Models\TblpickingsResults;
 use Illuminate\Support\Facades\DB;
 use Excel;
 
+
+
 class TblpickingsController extends AdminController
 {
     /**
@@ -32,13 +34,15 @@ class TblpickingsController extends AdminController
         $grid->fixHeader();
         $grid->disableActions();
         $grid->disableExport();
+        $grid->disableRowSelector();
+
         $grid->rows(function ($row, $number) {
          $row->column('number', ++$number);
          });
 
         $grid->tools(function ($tools) {
         $tools->append("<a href='" . config('app.url') . "/import_pickings' class='btn btn-primary'>Import Pickings</a>");
-        $tools->append('<a href="/admin/truncate-pickings" class="btn btn-danger">Truncate Pickings</a>');
+        $tools->append('<a href="/admin/truncate-pickings" class="btn btn-danger">Clear Pickings</a>');
         $tools->append('<a href="/admin/pickings/print" target="_blank" class="btn btn-success">Print Pickings</a>');
         $tools->append('<a href="https://www.ilovepdf.com/pdf_to_excel" target="_blank" class="btn btn-info">Convert PDF to XLSX</a>');
         $tools->append("<a href='" . config('app.url') . "/upload' class='btn btn-primary'>Merge PDFs</a>");
@@ -80,18 +84,18 @@ class TblpickingsController extends AdminController
 
 
 
-        $grid->number('<b>ID</b>')->totalRow('Total')->setAttribute('style', 'text-align: center;');
-        $grid->column('product', __('<center><b>Product</b></center>'))->setAttributes(['style' => 'text-align: center;']);
-        $grid->column('quantity_sum', __('<center><b>Quantity</b></center>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
+        $grid->number('<strong>ID</strong>')->totalRow('Total')->setAttribute('style', 'text-align: center;');
+        $grid->column('product', __('<strong>Product</strong>'))->setAttributes(['style' => 'text-align: center;']);
+        $grid->column('quantity_sum', __('<strong>Quantity</strong>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
             return "<span style='color: red; font-weight: bold;'> **Trays Ordered: $query** </span>";
         });
-        $grid->column('picked_sum', __('<center><b>Picked</b></center>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
+        $grid->column('picked_sum', __('<strong>Picked</strong>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
             return "<span style='color: red; font-weight: bold;'> **Trays Picked: $query** </span>";
         });
-        $grid->column('remaining', __('<center><b>Remaining</b></center>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
+        $grid->column('remaining', __('<strong>Remaining</strong>'))->setAttributes(['style' => 'text-align: center; font-weight: bold;'])->totalRow(function ($query) {
             return "<span style='color: red; font-weight: bold;'> **Trays Remaining: $query** </span>";
         });
-        $grid->column('trayod', __('<center><b>Dollies</b></center>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
+        $grid->column('trayod', __('<strong>Dollies</strong>'))->setAttributes(['style' => 'text-align: center;'])->totalRow(function ($query) {
             $dollies = $query;
             $divided = ceil($query / 64);
             return "<span style='color: red; font-weight: bold;'> **Dollies: {$dollies} Tracks: {$divided}**</span>";

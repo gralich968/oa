@@ -53,9 +53,9 @@ th, td {
 			  <th>Created</th>
 			</tr>
             </thead>
-			@foreach($users as $value)
+			@foreach($users as $index =>$value)
             <tr>
-              <td>{{ $value->id }}</td>
+              <td>{{ $index + 1 }}</td>
               <td>{{ $value->LCode }}</td>
               <td>{{ $value->sku }}</td>
               <td>{{ $value->qty }}</td>

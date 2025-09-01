@@ -84,11 +84,11 @@ float: right;
         <thead>
             <tr>
                <th style="width: 10%">POSITION</th>
-           <th style="width: 45%">PRODUCT</th>
-           <th style="width: 5%">QTY</th>
-           <th>NOTE</th>
-           <th style="width: 5%">UPT</th>
-           <th style="width: 15%">SLIFE</th>
+               <th style="width: 45%">PRODUCT</th>
+               <th style="width: 5%">QTY</th>
+               <th>NOTE</th>
+               <th style="width: 5%">UPT</th>
+               <th style="width: 15%">SLIFE</th>
             </tr>
         </thead>
         <tbody>

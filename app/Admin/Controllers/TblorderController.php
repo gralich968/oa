@@ -31,6 +31,7 @@ class TblorderController extends AdminController
         $grid->fixHeader();
         $grid->disableActions();
         $grid->disableExport();
+        $grid->disableRowSelector();
         // Group by partnerRef and select only necessary fields
        $grid->model()
     ->join('tbldestinations', 'tblorder.partnerRef', '=', 'tbldestinations.depo_code')
@@ -49,17 +50,17 @@ class TblorderController extends AdminController
         $tools->append('<a href="/admin/orders/print" target="_blank" class="btn btn-success">Print Order</a>');
 
      });
-        $grid->column('dueDate', 'Due Date')->display(function ($date) {
+
+        $grid->column('dueDate', __('<strong>Due Date</strong>'))->display(function ($date) {
         return \Carbon\Carbon::parse($date)->format('d-m-Y');
         })->sortable();
 
-        $grid->column('depoName', 'Depo Name')->expand(function ($model) {
-
-         $orders = Tblorder::where('partnerRef', $model->partnerRef)
-         ->whereDate('dueDate', $model->dueDate)
-         ->orderBy('positionsposId', 'asc')
-         ->get();
-
+        //$grid->column('partnerRef', __('<strong>Depo Code</strong>'));
+        $grid->column('depoName', __('<strong>Depo Name</strong>'))->expand(function ($model) {
+        $orders = Tblorder::where('partnerRef', $model->partnerRef)
+        ->whereDate('dueDate', $model->dueDate)
+        ->orderBy('positionsposId', 'asc')
+        ->get();
 
 
             $rows = $orders->map(function ($order) {
@@ -71,6 +72,10 @@ class TblorderController extends AdminController
                 optional($order->product)->description,
                 $order->requestQty,
                 $order->sparenumber1,
+                optional($order->product) && $order->product->slife
+                    ? \Carbon\Carbon::now()->addDays($order->product->slife)->format('d-m-Y')
+                    : null
+
             ];
             });
 
@@ -97,9 +102,10 @@ foreach ($groupedSums as $group) {
     $half = $group->sum36 / 36;
     $full = $group->sum18 / 18;
     $totalhf = ceil($half + $full);
+    $dueDate = \Carbon\Carbon::parse($group->dueDate)->format('d-m-Y');
 
     $customHeader .= "<h4 style='margin-top:10px;'>
-        Due Date: <strong>{$group->dueDate}</strong><br>
+        Due Date: <strong>{$dueDate}</strong><br>
         Half Tray: <strong>{$group->sum36}</strong> |
         Full Tray: <strong>{$group->sum18}</strong> |
         Total Dollies: <strong>{$totalhf}</strong>
@@ -113,7 +119,8 @@ foreach ($groupedSums as $group) {
             'Due Date',
             'Product',
             'Request Qty',
-            'UPT'
+            'UPT',
+            'BB Date'
             ], $rows->toArray()));
         });
         return $grid;

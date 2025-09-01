@@ -1,3 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laravel PDF Example</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrat.min.css" >
+    <style>
+        body {
+            font-family: 'Arial, sans-serif';
+            font-size: 16px;
+        }
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+
+        }
+        .content {
+            font-size: 18px;
+        }
+        table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table, th, td {
+  border: 2px solid black;
+  text-align: center;
+}
+
+th, td {
+  padding: 5px;
+}
+
+    </style>
+</head>
+<body>
 <div class="card">
   <div class="card-header">Merge PDF Files</div>
   <div class="card-body">
@@ -24,3 +63,5 @@
     </form>
   </div>
 </div>
+</body>
+</html>

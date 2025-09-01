@@ -60,6 +60,32 @@ Route::get('/upload', function () {
 Route::post('/upload', [PDFController::class, 'merge'])->name('pdf.merge');
 Route::get('/admin/orders/print-partner/{partnerRef}', [PrintOrdersController::class, 'printPartner']);
 
+Route::get('scanin', function () {
+    return view('stockin.index');
+});
+//STOCK
+Route::get('admin/truncate-tblin', function () {
+    DB::table('tblin')->truncate();
+    admin_toastr('Tblin truncated!', 'success');
+    return redirect('admin/tblin');
+});
+Route::get('admin/truncate-tblstockin', function () {
+    DB::table('tblstockin')->truncate();
+    admin_toastr('Tblstockin truncated!', 'success');
+    return redirect('admin/tblstockin');
+});
+
+Route::get('admin/truncate-tblout', function () {
+    DB::table('tblout')->truncate();
+    admin_toastr('Tblout truncated!', 'success');
+    return redirect('admin/tblout');
+});
+Route::get('admin/truncate-tblstockout', function () {
+    DB::table('tblstockout')->truncate();
+    admin_toastr('Tblstockout truncated!', 'success');
+    return redirect('admin/tblstockout');
+});
+//END STOCK
 
 
 
