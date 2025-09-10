@@ -40,7 +40,8 @@ class TblproductsController extends AdminController
     $filter->disableIdFilter();
 
     // Add a column filter
-    $filter->equal('upt', 'packs in basket');
+    $filter->equal('upt', 'packs in basket', 'brand');
+    $filter->like('brand', 'brand')->select(Tblproducts::pluck('brand','brand')->unique());
 
     //... additional filter options
     });
@@ -49,12 +50,12 @@ class TblproductsController extends AdminController
 
 
    // Chart Naglowek
-        $grid->header(function ($query) {
-    $status = $query->select(DB::raw('count(status) as count, status'))
-                ->groupBy('status')->get()->pluck('count', 'status')->toArray();
-    $doughnut = view('admin.chart.status', compact('status'));
-    return new Box('Status ratio', $doughnut);
-});
+   //     $grid->header(function ($query) {
+   // $status = $query->select(DB::raw('count(status) as count, status'))
+   //             ->groupBy('status')->get()->pluck('count', 'status')->toArray();
+   // $doughnut = view('admin.chart.status', compact('status'));
+   // return new Box('Status ratio', $doughnut);
+//});
 
    // FOOTER
    $grid->footer(function ($query) {
@@ -73,6 +74,7 @@ class TblproductsController extends AdminController
          $row->column('number', ++$number);
          });
         $grid->number('ID');
+        $grid->column('brand', __('Brand'))->sortable();
         $grid->column('description', __('Description'));
         $grid->column('sku', __('Sku'));
         $grid->column('upc', __('Upc'));
@@ -107,6 +109,7 @@ class TblproductsController extends AdminController
         $show = new Show(Tblproducts::findOrFail($id));
 
         $show->field('id', __('Id'));
+        $show->field('brand', __('Brand'));
         $show->field('description', __('Description'));
         $show->field('sku', __('Sku'));
         $show->field('upc', __('Upc'));
@@ -130,7 +133,7 @@ class TblproductsController extends AdminController
     protected function form()
     {
         $form = new Form(new Tblproducts());
-
+        $form->text('brand', __('Brand'))->rules('required');
         $form->text('description', __('Description'));
         $form->text('sku', __('Sku'));
         $form->text('upc', __('Upc'));

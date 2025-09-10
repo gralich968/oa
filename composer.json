@@ -8,6 +8,8 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
+        "blade-ui-kit/blade-heroicons": "^2.6",
+        "blade-ui-kit/blade-icons": "^1.8",
         "carlos-meneses/laravel-mpdf": "^2.1",
         "daltcore/lara-pdf-merger": "^2.0",
         "laravel/framework": "^11.31",

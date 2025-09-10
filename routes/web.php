@@ -11,6 +11,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PrintOrdersController;
 use App\Http\Controllers\ImportPickingsController;
+use App\Http\Controllers\BarcodeController;
 
 
 
@@ -85,7 +86,16 @@ Route::get('admin/truncate-tblstockout', function () {
     admin_toastr('Tblstockout truncated!', 'success');
     return redirect('admin/tblstockout');
 });
+Route::get('/stock/scanin', [BarcodeController::class, 'scaninForm']);
+Route::post('/stock/scanin', [BarcodeController::class, 'storescanin']);
+Route::post('/stock/scaninsave', [BarcodeController::class, 'storescaninsave']);
+
+Route::get('/stock/scanout', [BarcodeController::class, 'scanoutForm']);
+Route::post('/stock/scanout', [BarcodeController::class, 'storescanout']);
+Route::post('/stock/scanoutsave', [BarcodeController::class, 'storescanoutsave']);
+
 //END STOCK
+
 
 
 

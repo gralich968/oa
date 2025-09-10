@@ -9,6 +9,7 @@ class TblproductExporter extends ExcelExporter
 
     protected $columns = [
         'id' => 'ID',
+        'brand' => 'Brand',
         'description' => 'Product',
         'sku' => 'SKU',
         'upc' => 'UPC',
