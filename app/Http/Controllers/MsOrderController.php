@@ -3,19 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-<<<<<<< HEAD
 use App\Models\Mstblpicked;
 use App\Models\Morrisonstblpicked;
 use App\Models\Morrisonstblorders;
 use App\Models\Tbldestinations;
 use Illuminate\Support\Facades\DB;
-=======
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
 
 class MsOrderController extends Controller
 {
     public function scaninForm() {
-<<<<<<< HEAD
     $mstblpicked = Mstblpicked::all();
     $depos = Tbldestinations::all()->where('is_active', 1);
     return view('ms.pick', compact('mstblpicked', 'depos'));
@@ -121,9 +117,4 @@ public function storescanmorrisonsave(Request $request) {
     return redirect()->back()->with('success', "Copied " . count($insertData) . " rows with batch number {$batchNumber}");
 }
 
-=======
-    $tblin = Tblpick::all();
-    return view('ms.pick', compact('tblpick));
-}
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
 }
