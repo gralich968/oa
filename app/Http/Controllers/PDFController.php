@@ -56,7 +56,7 @@ public function merge(Request $request)
         $pdfMerger->addPDF($pdf->getPathname(), 'all');
     }
 
-    $mergedPath = public_path('pdfs/merged_' . time() . '.pdf');
+    $mergedPath = storage_path('app/public/pdfs/merged_' . now()->format('dmY_His') . '.pdf');
     $pdfMerger->merge();
     $pdfMerger->save($mergedPath);
 

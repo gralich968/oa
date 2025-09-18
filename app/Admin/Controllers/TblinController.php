@@ -25,12 +25,16 @@ class TblinController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Tblin());
+        $grid->tools(function ($tools) {
+            $tools->append('<a href="/admin/truncate-tblin" class="btn btn-danger">Delete Scanned</a>');
+        });
 
-        $grid->column('id', __('Id'));
-        $grid->column('barcode', __('Barcode'));
-        $grid->column('un', __('Un'));
-        $grid->column('created_at', __('Created at'))->dateFormat('d-m-Y H:i:s');
-        //$grid->column('updated_at', __('Updated at'));
+        $grid->column('id', __('<strong>ID</strong>'));
+        $grid->column('barcode', __('<strong>Barcode</strong>'));
+        $grid->column('username', __('<strong>User</strong>'));
+        $grid->column('un', __('<strong>Un</strong>'));
+        $grid->column('created_at', __('<strong>Created at</strong>'))->dateFormat('d-m-Y H:i:s');
+        $grid->column('updated_at', __('<strong>Updated at</strong>'))->dateFormat('d-m-Y H:i:s')->hide();
 
         return $grid;
     }
@@ -47,9 +51,10 @@ class TblinController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('barcode', __('Barcode'));
+        $show->field('username', __('User'));
         $show->field('un', __('Un'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
+        $show->field('created_at', __('Created at'))->dateFormat('d-m-Y H:i:s');
+        $show->field('updated_at', __('Updated at'))->dateFormat('d-m-Y H:i:s');
 
         return $show;
     }

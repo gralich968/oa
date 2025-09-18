@@ -6,18 +6,18 @@ use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
 use OpenAdmin\Admin\Show;
-use \App\Models\Tblorder;
+use App\Models\MorrisonsTblorders;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use OpenAdmin\Admin\Widgets\Table;
 
-class TblorderController extends AdminController
-{
-    /**
+class MorrisonsTblordersController extends AdminController
+{ /**
      * Title for current resource.
      *
      * @var string
      */
-    protected $title = 'Order List';
+    protected $title = 'Morrisons Order List';
 
     /**
      * Make a grid builder.
@@ -27,27 +27,27 @@ class TblorderController extends AdminController
 
     protected function grid()
     {
-        $grid = new Grid(new Tblorder());
+        $grid = new Grid(new MorrisonsTblorders());
         $grid->fixHeader();
         $grid->disableActions();
         $grid->disableExport();
         $grid->disableRowSelector();
         // Group by partnerRef and select only necessary fields
        $grid->model()
-    ->join('tbldestinations', 'tblorder.partnerRef', '=', 'tbldestinations.depo_code')
+    ->join('tbldestinations', 'morrisons_tblorders.partnerRef', '=', 'tbldestinations.depo_code')
     ->select(
-        'tblorder.partnerRef',
-        'tblorder.dueDate',
+        'morrisons_tblorders.partnerRef',
+        'morrisons_tblorders.dueDate',
         'tbldestinations.depo_name as depoName', // assuming this is the column holding the depo name
-        DB::raw('MAX(tblorder.id) as id')
+        DB::raw('MAX(morrisons_tblorders.id) as id')
     )
-    ->groupBy('tblorder.partnerRef', 'tbldestinations.depo_name', 'tblorder.dueDate')
-    ->orderBy('tblorder.partnerRef');
+    ->groupBy('morrisons_tblorders.partnerRef', 'tbldestinations.depo_name', 'morrisons_tblorders.dueDate')
+    ->orderBy('morrisons_tblorders.partnerRef');
 
         $grid->tools(function ($tools) {
-        $tools->append("<a href='" . config('app.url') . "/import_order' class='btn btn-primary'>Import Order</a>");
-        $tools->append('<a href="/admin/truncate-order" class="btn btn-danger">Delete Order</a>');
-        $tools->append('<a href="/admin/orders/print" target="_blank" class="btn btn-success">Print Order</a>');
+        $tools->append("<a href='" . config('app.url') . "/import_morrisons_order' class='btn btn-primary'>Import Order</a>");
+        $tools->append('<a href="/admin/truncate-morrisons-order" class="btn btn-danger">Delete Order</a>');
+        $tools->append('<a href="/admin/morrisons-orders/printmorrisons" target="_blank" class="btn btn-success">Print Order</a>');
 
      });
 
@@ -57,7 +57,7 @@ class TblorderController extends AdminController
 
         //$grid->column('partnerRef', __('<strong>Depo Code</strong>'));
         $grid->column('depoName', __('<strong>Depo Name</strong>'))->expand(function ($model) {
-        $orders = Tblorder::where('partnerRef', $model->partnerRef)
+        $orders = MorrisonsTblorders::where('partnerRef', $model->partnerRef)
         ->whereDate('dueDate', $model->dueDate)
         ->orderBy('positionsposId', 'asc')
         ->get();
@@ -72,27 +72,26 @@ class TblorderController extends AdminController
                 optional($order->product)->description,
                 $order->requestQty,
                 $order->sparenumber1,
-                optional($order->product) && $order->product->slife
-                    ? \Carbon\Carbon::now()->addDays($order->product->slife)->format('d-m-Y')
-                    : null
-
-            ];
+                //optional($order->product) && $order->product->slife
+                //    ? \Carbon\Carbon::now()->addDays($order->product->slife)->format('d-m-Y')
+                //    : null
+               ];
             });
 
             // Add PDF print button for this partnerRef
-            $printUrl = url("/admin/orders/print-partner/" . $model->partnerRef . "?dueDate=" . $model->dueDate);
+            $printUrl = url("/admin/orders/print-partner-morrisons/" . $model->partnerRef . "?dueDate=" . $model->dueDate);
             $button = "<a href='{$printUrl}' target='_blank' class='btn btn-success btn-sm' style='margin-bottom:10px;'>Print Order</a>";
 
 // Custom header HTML
-$groupedSums = DB::table('tblorder')
-    ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
-    ->selectRaw('tblorder.dueDate,
-                 SUM(CASE WHEN tblproducts.trayod = 36 THEN tblorder.requestQty ELSE 0 END) as sum36,
-                 SUM(CASE WHEN tblproducts.trayod = 18 THEN tblorder.requestQty ELSE 0 END) as sum18')
-    ->where('tblorder.partnerRef', $model->partnerRef)
-    ->whereDate('tblorder.dueDate', $model->dueDate)
-    ->groupBy('tblorder.dueDate')
-    ->orderBy('tblorder.dueDate')
+$groupedSums = DB::table('morrisons_tblorders')
+    ->join('tblproducts', 'morrisons_tblorders.itemNumber', '=', 'tblproducts.sku')
+    ->selectRaw('morrisons_tblorders.dueDate,
+                 SUM(CASE WHEN tblproducts.trayod = 36 THEN morrisons_tblorders.requestQty ELSE 0 END) as sum36,
+                 SUM(CASE WHEN tblproducts.trayod = 18 THEN morrisons_tblorders.requestQty ELSE 0 END) as sum18')
+    ->where('morrisons_tblorders.partnerRef', $model->partnerRef)
+    ->whereDate('morrisons_tblorders.dueDate', $model->dueDate)
+    ->groupBy('morrisons_tblorders.dueDate')
+    ->orderBy('morrisons_tblorders.dueDate')
     ->get();
 
 
@@ -106,9 +105,7 @@ foreach ($groupedSums as $group) {
 
     $customHeader .= "<h4 style='margin-top:10px;'>
         Due Date: <strong>{$dueDate}</strong><br>
-        Half Tray: <strong>{$group->sum36}</strong> |
-        Full Tray: <strong>{$group->sum18}</strong> |
-        Total Dollies: <strong>{$totalhf}</strong>
+        Order Number: <strong>" . ($orders->first()?->orderNumber ?? '000000') . "</strong><br>
     </h4>";
 }
 
@@ -120,7 +117,7 @@ foreach ($groupedSums as $group) {
             'Product',
             'Request Qty',
             'UPT',
-            'BB Date'
+           // 'BB Date'
             ], $rows->toArray()));
         });
         return $grid;
@@ -133,7 +130,7 @@ foreach ($groupedSums as $group) {
      */
     protected function detail($id)
     {
-        $show = new Show(Tblorder::findOrFail($id));
+        $show = new Show(MorrisonsTblorders::findOrFail($id));
 
         $show->field('id', __('Id'));
         $show->field('companyCode', __('CompanyCode'));
@@ -162,7 +159,7 @@ foreach ($groupedSums as $group) {
      */
     protected function form()
     {
-        $form = new Form(new Tblorder());
+        $form = new Form(new MorrisonsTblorders());
 
         $form->text('companyCode', __('CompanyCode'));
         $form->text('orderNumber', __('OrderNumber'));

@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .header {
-            text-align: center;
+            text-align: left;
             margin-bottom: 20px;
 
         }
@@ -43,35 +43,39 @@ float: right;
 <body>
 @foreach($data as $depo)
     <div>
-        <div style="text-align: left;">
+             <div style="text-align: left;">
             <div class="deponame">
-            <center><h1>{{ $depo['depoName'] }}</h1></center>
+            <h1>{{ $depo['depoName'] }}</h1>
             <strong>Depo Date:   {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong><br>
             <strong>Po Number:   {{ $depo['poNumber'] }}</strong><br>
+</div>
+        </div>
+
+
 
  @foreach($depo['orders'] as $order)
              @php
                     // Calculate trayod sums once per partnerRef
-                   $groupedSums = DB::table('tblorder')
-    ->join('tblproducts', 'tblorder.itemNumber', '=', 'tblproducts.sku')
-    ->selectRaw('tblorder.dueDate,
-                 SUM(CASE WHEN tblproducts.trayod = 36 THEN tblorder.requestQty ELSE 0 END) as sum36,
-                 SUM(CASE WHEN tblproducts.trayod = 18 THEN tblorder.requestQty ELSE 0 END) as sum18')
-    ->where('tblorder.partnerRef', $order->partnerRef)
-    ->whereDate('tblorder.dueDate', $order->dueDate)
-    ->groupBy('tblorder.dueDate')
-    ->orderBy('tblorder.dueDate')
+                   $groupedSums = DB::table('morrisons_tblorders')
+    ->join('tblproducts', 'morrisons_tblorders.itemNumber', '=', 'tblproducts.sku')
+    ->selectRaw('morrisons_tblorders.dueDate,
+                 SUM(CASE WHEN tblproducts.trayod = 36 THEN morrisons_tblorders.requestQty ELSE 0 END) as sum36,
+                 SUM(CASE WHEN tblproducts.trayod = 18 THEN morrisons_tblorders.requestQty ELSE 0 END) as sum18')
+    ->where('morrisons_tblorders.partnerRef', $order->partnerRef)
+    ->whereDate('morrisons_tblorders.dueDate', $order->dueDate)
+    ->groupBy('morrisons_tblorders.dueDate')
+    ->orderBy('morrisons_tblorders.dueDate')
     ->get();
     $dollies = $groupedSums->sum('sum36') / 36 + $groupedSums->sum('sum18') / 18;
             @endphp
                 @endforeach
 
-@if ($groupedSums->isNotEmpty())
+<!--@if ($groupedSums->isNotEmpty())
     <div style="margin-bottom:10px;">
         <strong>Total Qty (HalfTrays = 36):   {{ $groupedSums->sum('sum36') }}</strong><br>
         <strong>Total Qty (MetricsTrays = 18):   {{ $groupedSums->sum('sum18') }}</strong><br>
         <strong>Dollies:   {{ ceil($dollies) }} </strong>
-@endif
+@endif-->
  <div class="flex-container">
                 <img src="data:image/png;base64,{!! $depo['barcode'] !!}" width="300" height="100" id="hp">
             </div>

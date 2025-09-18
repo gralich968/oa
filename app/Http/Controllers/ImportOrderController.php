@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 
+
 class ImportOrderController extends Controller
 {
     public function index()
@@ -39,21 +40,30 @@ class ImportOrderController extends Controller
         foreach ($rows->Skip(1) as $row) {
             $rowArray = $row->toArray();
 
-            // Fill completely empty rows with data above
-            if ($previousRow !== null) {
-    foreach ($rowArray as $index => $cell) {
-        if (empty($cell) && isset($previousRow[$index])) {
-            $rowArray[$index] = $previousRow[$index];
+
+ // Fill empty cells with previous row's data
+    if ($previousRow !== null) {
+        foreach ($rowArray as $index => $cell) {
+            if (empty($cell)) {
+                // If it's requestQty column (index 9), set to 0
+                if ($index === 9) {
+                    $rowArray[$index] = 0;
+                } elseif (isset($previousRow[$index])) {
+                    $rowArray[$index] = $previousRow[$index];
+                }
+            }
+        }
+    } else {
+        // Handle first row: if requestQty is empty, set to 0
+        if (empty($rowArray[9])) {
+            $rowArray[9] = 0;
         }
     }
-}
+
 $previousRow = $rowArray;
 
 
             if (count($rowArray) >= 12) {
-
-        //$orderDate = $this->formatExcelDate($rowArray[2]);
-        //$dueDate = $this->formatExcelDate($rowArray[4]);
 
                 $insert_data[] = [
                     'companyCode'           => $rowArray[0],
@@ -94,4 +104,82 @@ private function formatExcelDate($value)
     }
 }
 
+ public function morrisonsIndex()
+    {
+        $data = DB::table('morrisons_tblorders')->orderBy('id', 'ASC')->get();
+        return view('import_morrisons_order', compact('data'));
+    }
+
+     public function importMorrisons(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'select_file' => 'required|file|mimes:xls,xlsx,ods'
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $collection = Excel::toCollection(null, $request->file('select_file'));
+
+        if ($collection->isEmpty()) {
+            return back()->with('error', 'Excel file is empty.');
+        }
+
+        $rows = $collection->first();
+        $insert_data = [];
+        $previousRow = null;
+
+        foreach ($rows->Skip(1) as $row) {
+            $rowArray = $row->toArray();
+
+
+ // Fill empty cells with previous row's data
+    if ($previousRow !== null) {
+        foreach ($rowArray as $index => $cell) {
+            if (empty($cell)) {
+                // If it's requestQty column (index 9), set to 0
+                if ($index === 9) {
+                    $rowArray[$index] = 0;
+                } elseif (isset($previousRow[$index])) {
+                    $rowArray[$index] = $previousRow[$index];
+                }
+            }
+        }
+    } else {
+        // Handle first row: if requestQty is empty, set to 0
+        if (empty($rowArray[9])) {
+            $rowArray[9] = 0;
+        }
+    }
+
+$previousRow = $rowArray;
+
+
+            if (count($rowArray) >= 12) {
+
+                $insert_data[] = [
+                    'companyCode'           => $rowArray[0],
+                    'orderNumber'           => $rowArray[1],
+                    'orderDate'             => $this->formatExcelDate($rowArray[2]),
+                    'partnerRef'            => $rowArray[3],
+                    'dueDate'               => $this->formatExcelDate($rowArray[4]),
+                    'orderType'             => $rowArray[5],
+                    'positionsposId'        => $rowArray[6],
+                    'positioncompanyCode'   => $rowArray[7],
+                    'itemNumber'            => $rowArray[8],
+                    'requestQty'            => $rowArray[9],
+                    'positionuom'           => $rowArray[10],
+                    'sparenumber1'          => $rowArray[11],
+                ];
+            }
+        }
+
+        if (!empty($insert_data)) {
+            DB::table('morrisons_tblorders')->insert($insert_data);
+        }
+
+        return back()->with('success', 'Excel data imported successfully.');
+    }
 }
+

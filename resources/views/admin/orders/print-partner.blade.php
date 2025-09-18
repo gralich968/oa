@@ -41,15 +41,15 @@ float: right;
     </style>
 </head>
 <body>
-@foreach($data as $depo)
-    <div>
+    @foreach($data as $depo)
+    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; width: 100%;">
         <div style="text-align: left;">
             <div class="deponame">
             <center><h1>{{ $depo['depoName'] }}</h1></center>
-            <strong>Depo Date:   {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong><br>
+           <strong>Depo Date:   {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}</strong><br>
             <strong>Po Number:   {{ $depo['poNumber'] }}</strong><br>
 
- @foreach($depo['orders'] as $order)
+            @foreach($depo['orders'] as $order)
              @php
                     // Calculate trayod sums once per partnerRef
                    $groupedSums = DB::table('tblorder')
@@ -72,45 +72,40 @@ float: right;
         <strong>Total Qty (MetricsTrays = 18):   {{ $groupedSums->sum('sum18') }}</strong><br>
         <strong>Dollies:   {{ ceil($dollies) }} </strong>
 @endif
- <div class="flex-container">
+             <div class="flex-container">
                 <img src="data:image/png;base64,{!! $depo['barcode'] !!}" width="300" height="100" id="hp">
             </div>
+        </div>
+    </div>
 
     <br />
 
-        <div class="content">
     <table>
-        <tr>
-           <th style="width: 10%">POSITION</th>
-           <th style="width: 45%">PRODUCT</th>
-           <th style="width: 5%">QTY</th>
-           <th>NOTE</th>
-           <th style="width: 5%">UPT</th>
-           <th style="width: 15%">SLIFE</th>
-        </tr>
+        <thead>
+            <tr>
+               <th style="width: 10%">POSITION</th>
+               <th style="width: 45%">PRODUCT</th>
+               <th style="width: 5%">QTY</th>
+               <th>NOTE</th>
+               <th style="width: 5%">UPT</th>
+               <th style="width: 15%">SLIFE</th>
+            </tr>
+        </thead>
         <tbody>
-
             @foreach($depo['orders'] as $order)
                 <tr>
                     <td>{{ $order->positionsposId }}</td>
-                    <td>
-                        @php
-                            $product = \App\Models\Tblproducts::where('sku', $order->itemNumber)->first();
-                        @endphp
-                        @if($product)
-                            <small>{{ $order->itemNumber }} - {{ $product->description }}</small>
-                        @endif
-                    </td>
+                    <td>{{ $order->itemNumber }} - {{ optional($order->product)->description }}</td>
                     <td>{{ $order->requestQty }}</td>
-                    <td>{{ $order->nic }}</td>
+                    <td>{{ $order->note }}</td>
                     <td>{{ $order->sparenumber1 }}</td>
-                    @php
+                     @php
                         $bbd = \App\Models\tblproducts::select('slife')
                             ->where('sku', $order->itemNumber)
                             ->first();
                         $slifeDate = '';
                         if ($bbd && $bbd->slife) {
-                            $slifeDate = \Carbon\Carbon::parse($depo['dueDate'])
+                            $slifeDate = \Carbon\Carbon::parse($order->dueDate)
                                 ->subDay()
                                 ->addDays($bbd->slife)
                                 ->format('d-m-Y');
@@ -121,13 +116,11 @@ float: right;
             @endforeach
         </tbody>
     </table>
-    </div>
-    </div>
 
 @if (!$loop->last)
         <div style="page-break-after: always;"></div>
     @endif
 
-@endforeach
+    @endforeach
 </body>
 </html>

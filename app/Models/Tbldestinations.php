@@ -10,6 +10,7 @@ class Tbldestinations extends Model
     use SoftDeletes;
     protected $table = 'tbldestinations';
     protected $fillable = [
+        'brand',
         'depo_name',
         'depo_code',
         'depo_type',

@@ -26,11 +26,16 @@ class TbloutController extends AdminController
     {
         $grid = new Grid(new Tblout());
 
-        $grid->column('id', __('Id'));
-        $grid->column('barcode', __('Barcode'));
-        $grid->column('un', __('Un'));
-        $grid->column('created_at', __('Created at'))->dateFormat('d-m-Y H:i:s');
-        //$grid->column('updated_at', __('Updated at'));
+        $grid->tools(function ($tools) {
+            $tools->append('<a href="/admin/truncate-tblout" class="btn btn-danger">Delete Scanned</a>');
+        });
+
+        $grid->column('id', __('<strong>Id</strong>'));
+        $grid->column('barcode', __('<strong>Barcode</strong>'));
+        $grid->column('username', __('<strong>Username</strong>'));
+        $grid->column('un', __('<strong>Un</strong>'));
+        $grid->column('created_at', __('<strong>Created at</strong>'))->dateFormat('d-m-Y H:i:s');
+        $grid->column('updated_at', __('<strong>Updated at</strong>'))->dateFormat('d-m-Y H:i:s')->hide();
 
         return $grid;
     }

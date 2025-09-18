@@ -10,6 +10,8 @@ use App\Admin\Controllers\TblorderController;
 use App\Admin\Controllers\TbldestinationsController;
 use App\Admin\Controllers\TblpickingsController;
 use App\Admin\Controllers\TblpickingsResultsController;
+use App\Admin\Controllers\MorrisonsTblordersController;
+use App\Admin\Controllers\MorrisonsTblprintController;
 use OpenAdmin\Admin\Facades\Admin;
 
 Admin::routes();
@@ -31,10 +33,15 @@ Route::group([
 
     //inventory
     $router->resource('tblproducts', TblproductsController::class);
-    $router->resource('tblorders', TblorderController::class);
     $router->resource('tbldestinations', TbldestinationsController::class);
+     //inventory end
+    //M&S
+    $router->resource('tblorders', TblorderController::class);
     $router->resource('tblpickings', TblpickingsController::class);
     $router->resource('tblpickings-results', TblpickingsResultsController::class);
-    //inventory end
+    //M&S END
+    //MORRISONS
+    $router->resource('morrisons-tblorders', MorrisonsTblordersController::class);
+    $router->resource('morrisons-tblprints', MorrisonsTblprintController::class);
 
 });

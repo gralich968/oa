@@ -73,7 +73,14 @@ class TblproductsController extends AdminController
          $row->column('number', ++$number);
          });
         $grid->number('ID');
-        $grid->column('description', __('Description'));
+        $grid->column('brand', __('Brand'))
+            ->display(function ($brand) {
+                return strtoupper($brand);
+            })->sortable();
+
+        $grid->column('description', __('Description'))->display((function ($description) {
+            return strtoupper($description);
+        }))->sortable();
         $grid->column('sku', __('Sku'));
         $grid->column('upc', __('Upc'));
         $grid->column('slife', __('Slife'));
@@ -107,6 +114,9 @@ class TblproductsController extends AdminController
         $show = new Show(Tblproducts::findOrFail($id));
 
         $show->field('id', __('Id'));
+        $show->field('brand', __('Brand'))->display(function () {
+            return strtoupper($this->brand);
+        });
         $show->field('description', __('Description'));
         $show->field('sku', __('Sku'));
         $show->field('upc', __('Upc'));
@@ -130,7 +140,7 @@ class TblproductsController extends AdminController
     protected function form()
     {
         $form = new Form(new Tblproducts());
-
+        $form->text('brand', __('Brand'));
         $form->text('description', __('Description'));
         $form->text('sku', __('Sku'));
         $form->text('upc', __('Upc'));

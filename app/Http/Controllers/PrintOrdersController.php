@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MorrisonsTblorders;
+use App\Models\MorrisonsTblprint;
 use App\Models\Tbldestinations;
 use App\Models\Tblorder;
 use App\Models\TblpickingsResults;
-use PDF;
+use App\Models\Tblproducts;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PrintOrdersController extends Controller
 {
@@ -15,26 +20,34 @@ class PrintOrdersController extends Controller
 {
 
 $partnerRefs = Tblorder::select('partnerRef')->distinct()->get();
+$groupedOrders = Tblorder::select('partnerRef', 'dueDate')
+    ->distinct()
+    ->orderBy('dueDate')
+    ->get();
 
 $generatorHTML = new BarcodeGeneratorPNG();
 
-$data = $partnerRefs->map(function ($ref) use ($generatorHTML) {
-    $poNumber = Tblorder::where('partnerRef', $ref->partnerRef)->value('orderNumber');
+
+$data = $groupedOrders->map(function ($group) use ($generatorHTML) {
+    $orders = Tblorder::where('partnerRef', $group->partnerRef)
+        ->whereDate('dueDate', $group->dueDate)
+        ->orderBy('positionsposId', 'asc')
+        ->get();
+
+    $poNumber = $orders->first()?->orderNumber ?? '000000';
+
+
 
     return [
-        'depoName' => Tbldestinations::where('depo_code', $ref->partnerRef)->value('depo_name'),
-        'orders' => Tblorder::where('partnerRef', $ref->partnerRef)->get(),
-        'dueDate' => Tblorder::where('partnerRef', $ref->partnerRef)
-            ->orderByDesc('dueDate')
-            ->value('dueDate'),
+        'depoName' => Tbldestinations::where('depo_code', $group->partnerRef)->value('depo_name'),
+        'orders' => $orders,
+        'dueDate' => \Carbon\Carbon::parse($group->dueDate)->format('d-m-Y'),
         'poNumber' => $poNumber,
-        'barcode' => base64_encode($generatorHTML->getBarcode('400'.$poNumber, $generatorHTML::TYPE_CODE_39)),
+        'barcode' => base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39)),
     ];
+});
 
 
-
-
-    });
 
     $pdf = PDF::loadView('admin.orders.print', compact('data'));
     return $pdf->stream('depo-orders.pdf');
@@ -59,4 +72,168 @@ public function printPickingList()
 }
 
 
+
+public function printPartner(Request $request, $partnerRef)
+{
+
+
+    $dueDate = $request->query('dueDate'); // Get dueDate from query string
+    $generatorHTML = new BarcodeGeneratorPNG();
+
+    // Get all orders for the partner
+    $orders = Tblorder::where('partnerRef', $partnerRef)
+        ->whereDate('dueDate', $dueDate)
+        ->orderBy('positionsposId', 'asc')
+        ->get();
+
+    // Group orders by dueDate
+    $groupedOrders = $orders->groupBy(function ($order) {
+        return \Carbon\Carbon::parse($order->dueDate)->format('d-m-Y');
+    });
+
+    // Prepare data for each dueDate group
+    $data = $groupedOrders->map(function ($ordersGroup, $dueDate) use ($partnerRef, $generatorHTML) {
+        $poNumber = $ordersGroup->first()?->orderNumber ?? '000000';
+        $depoName = Tbldestinations::where('depo_code', $partnerRef)->value('depo_name');
+        $barcode = base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39));
+
+        return [
+            'orders' => $ordersGroup,
+            'partnerRef' => $partnerRef,
+            'poNumber' => $poNumber,
+            'depoName' => $depoName,
+            'dueDate' => $dueDate,
+            'barcode' => $barcode,
+        ];
+    });
+
+    // Render PDF with grouped data
+    //dd($data);
+    $pdf = Pdf::loadView('admin.orders.print-partner', ['data' => $data]);
+    return $pdf->stream('partner-orders-' . now() . '.pdf');
+}
+
+   public function printMorrisonsOrders()
+{
+
+$partnerRefs = MorrisonsTblorders::select('partnerRef')->distinct()->get();
+$groupedOrders = MorrisonsTblorders::select('partnerRef', 'dueDate')
+    ->distinct()
+    ->orderBy('dueDate')
+    ->get();
+
+$generatorHTML = new BarcodeGeneratorPNG();
+
+
+$data = $groupedOrders->map(function ($group) use ($generatorHTML) {
+    $orders = MorrisonsTblorders::where('partnerRef', $group->partnerRef)
+        ->whereDate('dueDate', $group->dueDate)
+        ->orderBy('positionsposId', 'asc')
+        ->get();
+
+    $poNumber = $orders->first()?->orderNumber ?? '000000';
+
+
+
+    return [
+        'depoName' => Tbldestinations::where('depo_code', $group->partnerRef)->value('depo_name'),
+        'orders' => $orders,
+        'dueDate' => \Carbon\Carbon::parse($group->dueDate)->format('d-m-Y'),
+        'poNumber' => $poNumber,
+        'barcode' => base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39)),
+    ];
+});
+
+
+
+    $pdf = PDF::loadView('admin.orders.printmorrisons', compact('data'));
+    return $pdf->stream('depo-orders.pdf');
+}
+
+public function printPartnerMorrisons(Request $request, $partnerRef)
+{
+
+
+    $dueDate = $request->query('dueDate'); // Get dueDate from query string
+    $generatorHTML = new BarcodeGeneratorPNG();
+
+    // Get all orders for the partner
+    $orders = MorrisonsTblorders::where('partnerRef', $partnerRef)
+        ->whereDate('dueDate', $dueDate)
+        ->orderBy('positionsposId', 'asc')
+        ->get();
+
+    // Group orders by dueDate
+    $groupedOrders = $orders->groupBy(function ($order) {
+        return \Carbon\Carbon::parse($order->dueDate)->format('d-m-Y');
+    });
+
+    // Prepare data for each dueDate group
+    $data = $groupedOrders->map(function ($ordersGroup, $dueDate) use ($partnerRef, $generatorHTML) {
+        $poNumber = $ordersGroup->first()?->orderNumber ?? '000000';
+        $depoName = Tbldestinations::where('depo_code', $partnerRef)->value('depo_name');
+        $barcode = base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39));
+
+        return [
+            'orders' => $ordersGroup,
+            'partnerRef' => $partnerRef,
+            'poNumber' => $poNumber,
+            'depoName' => $depoName,
+            'dueDate' => $dueDate,
+            'barcode' => $barcode,
+        ];
+    });
+
+    // Render PDF with grouped data
+    //dd($data);
+    $pdf = Pdf::loadView('admin.orders.print-partner-morrisons', ['data' => $data]);
+    return $pdf->stream('partner-orders-morrisons' . now() . '.pdf');
+}
+
+public function PrintPickedMorrisonsDepo(Request $request, $depo)
+{
+    $dueDate = MorrisonsTblprint::where('depo', $depo)->value('dueDate'); // Get dueDate from query string
+    $generatorHTML = new BarcodeGeneratorPNG();
+
+    // Get all picked orders for the depo
+    $orders = MorrisonsTblprint::where('depo', $depo)
+        ->whereDate('dueDate', $dueDate)
+        ->where('quantity', '>', 0) // Only include picked items
+        ->orderBy('barcode', 'asc')
+        ->get();
+
+    // Group orders by dueDate
+    $groupedOrders = $orders->groupBy(function ($order) {
+        return $order->dueDate;
+    });
+
+    // Prepare data for each dueDate group
+    $data = $groupedOrders->map(function ($ordersGroup, $dueDate) use ($depo, $generatorHTML) {
+        $poNumber = $ordersGroup->first()?->ponumber ?? '000000';
+        $depoName = Tbldestinations::where('depo_code', $depo)->value('depo_name');
+        $desc = Tblproducts::where('sku', $poNumber)->value('description');
+        $companyCode = MorrisonsTblorders::where('partnerRef', $depo)->value('companyCode');
+        $batch = $ordersGroup->first()?->batch_no ?? 'N/A';
+        $dueDate = MorrisonsTblprint::where('depo', $depo)->value('dueDate');
+        $barcode = base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39));
+
+        return [
+            'orders' => $ordersGroup,
+            'partnerRef' => $depo,
+            'poNumber' => $poNumber,
+            'depoName' => $depoName,
+            'description' => $desc,
+            'dueDate' => $dueDate,
+            'barcode' => $barcode,
+            'batch_no' => $batch,
+            'companyCode' => $companyCode,
+        ];
+    });
+
+    // Render PDF with grouped data
+    //dd($data);
+    $pdf = Pdf::loadView('morrisons.print-picked-morrisons-depo', ['data' => $data]);
+    return $pdf->stream('picked-morrisons-depo-' . now() . '.pdf');
+
+}
 }

@@ -31,20 +31,34 @@ class TblstockinController extends AdminController
         $grid->fixHeader();
         $grid->disableCreateButton();
 
+
         $grid->tools(function ($tools) {
+            $count = Tblstockin::where('sku', 'like', '%' . request('sku') . '%')->count();
             $tools->append("<a href='" . config('app.url') . "/pdfin' target='_blank' class='btn btn-primary'>Create PDF</a>");
             $tools->append("<a href='" . config('app.url') . "/excel-export' target='_blank' class='btn btn-primary'>Export XLSX</a>");
+            $tools->append('<a href="/admin/truncate-tblstockin" class="btn btn-danger">Delete Items</a>');
+            $tools->append("<div style='padding:10px;'>Total PLTs: {$count}</div>");
              });
+
+
+        $grid->filter(function ($filter) {
+            $filter->like('sku', 'SKU');
+            $filter->equal('username', 'User')->select(
+                Tblstockin::distinct()->pluck('username', 'username')
+            );
+        });
+
 
         $grid->rows(function ($row, $number) {
          $row->column('number', ++$number);
-     });
-        $grid->number('ID')->totalRow('Total');
+        });
+        $grid->number('<strong>ID</strong>')->totalRow('Total Boxes');
         //$grid->column('id', __('Id'));
-        $grid->column('LCode', __('LCode'));
-        $grid->column('sku', __('Sku'))->filter('like');
-        $grid->column('qty', __('Qty'))->totalRow();
-        $grid->column('created_at', __('Created at'))->dateFormat('d-m-Y H:i:s');
+        $grid->column('LCode', __('<strong>LCode</strong>'));
+        $grid->column('sku', __('<strong>Sku</strong>'))->filter('like');
+        $grid->column('qty', __('<strong>Qty</strong>'))->totalRow();
+        $grid->column('username', __('<strong>User</strong>'));
+        $grid->column('created_at', __('<strong>Created at</strong>'))->dateFormat('d-m-Y H:i:s');
         //$grid->column('updated_at', __('Updated at'));
 
         return $grid;
