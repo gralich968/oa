@@ -58,68 +58,7 @@ Route::get('/admin/pickings/print', [PrintOrdersController::class, 'printPicking
 Route::get('/upload', function () {
     return view('upload');
 });
-Route::post('/upload', [PDFController::class, 'merge'])->name('pdf.merge');
-Route::get('/admin/orders/print-partner/{partnerRef}', [PrintOrdersController::class, 'printPartner']);
-
-Route::get('scanin', function () {
-    return view('stockin.index');
-});
-//STOCK
-Route::get('admin/truncate-tblin', function () {
-    DB::table('tblin')->truncate();
-    admin_toastr('Tblin truncated!', 'success');
-    return redirect('admin/tblin');
-});
-Route::get('admin/truncate-tblstockin', function () {
-    DB::table('tblstockin')->truncate();
-    admin_toastr('Tblstockin truncated!', 'success');
-    return redirect('admin/tblstockin');
-});
-
-Route::get('admin/truncate-tblout', function () {
-    DB::table('tblout')->truncate();
-    admin_toastr('Tblout truncated!', 'success');
-    return redirect('admin/tblout');
-});
-Route::get('admin/truncate-tblstockout', function () {
-    DB::table('tblstockout')->truncate();
-    admin_toastr('Tblstockout truncated!', 'success');
-    return redirect('admin/tblstockout');
-});
-Route::get('/stock/scanin', [BarcodeController::class, 'scaninForm']);
-Route::post('/stock/scanin', [BarcodeController::class, 'storescanin']);
-Route::post('/stock/scaninsave', [BarcodeController::class, 'storescaninsave']);
-
-Route::get('/stock/scanout', [BarcodeController::class, 'scanoutForm']);
-Route::post('/stock/scanout', [BarcodeController::class, 'storescanout']);
-Route::post('/stock/scanoutsave', [BarcodeController::class, 'storescanoutsave']);
-
-//END STOCK
-
-// MS ORDER
-Route::get('/ms/pick', [App\Http\Controllers\MsOrderController::class, 'scaninForm']);
-Route::post('/ms/pick', [App\Http\Controllers\MsOrderController::class, 'storescanin']);
-Route::post('/ms/picksave', [App\Http\Controllers\MsOrderController::class, 'storescaninsave']);
-
-//MORRISONS ORDER
-Route::get('/import_morrisons_order', [ImportOrderController::class, 'morrisonsIndex']);
-Route::post('/import_morrisons_order/import', [ImportOrderController::class, 'importMorrisons']);
-Route::get('/admin/morrisons-orders/printmorrisons', [PrintOrdersController::class, 'printMorrisonsOrders']);
-Route::get('/admin/orders/print-partner-morrisons/{depo}', [PrintOrdersController::class, 'printPartnerMorrisons']);
-Route::get('/morrisons/pick', [App\Http\Controllers\MsOrderController::class, 'scanMorrisonsForm']);
-Route::post('/morrisons/pick', [App\Http\Controllers\MsOrderController::class, 'storeMorrisonsscan']);
-Route::post('/morrisons/picksave', [App\Http\Controllers\MsOrderController::class, 'storescanmorrisonsave']);
-Route::post('/morrisons/deletepick/{id}', [App\Http\Controllers\MsOrderController::class, 'deletePick']);
-Route::get('/morrisons/print-picked-morrisons-depo/{depo}', [PrintOrdersController::class, 'PrintPickedMorrisonsDepo']);
-
-//END MS ORDER
-
-Route::get('admin/truncate-morrisons-order', function () {
-    DB::table('morrisons_tblorders')->truncate();
-    admin_toastr('Table truncated!', 'success');
-    return redirect(admin_url('morrisons-tblorders'));
-});
-
+Route::post('/merge-pdfs', [PDFController::class, 'merge'])->name('pdf.merge');
 
 
 

@@ -7,11 +7,8 @@ use App\Models\MorrisonsTblprint;
 use App\Models\Tbldestinations;
 use App\Models\Tblorder;
 use App\Models\TblpickingsResults;
-use App\Models\Tblproducts;
+use PDF;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PrintOrdersController extends Controller
 {
@@ -50,7 +47,7 @@ $data = $groupedOrders->map(function ($group) use ($generatorHTML) {
 
 
     $pdf = PDF::loadView('admin.orders.print', compact('data'));
-    return $pdf->stream('depo-orders.pdf');
+    return $pdf->stream('depo-orders-' . now() . '.pdf');
 }
 
 public function printPickingList()
@@ -70,6 +67,49 @@ public function printPickingList()
     $pdf = PDF::loadView('admin.pickings.print', compact('data', 'totals'));
     return $pdf->stream('picking-list.pdf');
 }
+
+
+
+public function printPartner(Request $request, $partnerRef)
+{
+
+
+    $dueDate = $request->query('dueDate'); // Get dueDate from query string
+    $generatorHTML = new BarcodeGeneratorPNG();
+
+    // Get all orders for the partner
+    $orders = Tblorder::where('partnerRef', $partnerRef)
+        ->whereDate('dueDate', $dueDate)
+        ->orderBy('positionsposId', 'asc')
+        ->get();
+
+    // Group orders by dueDate
+    $groupedOrders = $orders->groupBy(function ($order) {
+        return \Carbon\Carbon::parse($order->dueDate)->format('d-m-Y');
+    });
+
+    // Prepare data for each dueDate group
+    $data = $groupedOrders->map(function ($ordersGroup, $dueDate) use ($partnerRef, $generatorHTML) {
+        $poNumber = $ordersGroup->first()?->orderNumber ?? '000000';
+        $depoName = Tbldestinations::where('depo_code', $partnerRef)->value('depo_name');
+        $barcode = base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39));
+
+        return [
+            'orders' => $ordersGroup,
+            'partnerRef' => $partnerRef,
+            'poNumber' => $poNumber,
+            'depoName' => $depoName,
+            'dueDate' => $dueDate,
+            'barcode' => $barcode,
+        ];
+    });
+
+    // Render PDF with grouped data
+    //dd($data);
+    $pdf = Pdf::loadView('admin.orders.print-partner', ['data' => $data]);
+    return $pdf->stream('partner-orders-' . now() . '.pdf');
+}
+
 
 
 
