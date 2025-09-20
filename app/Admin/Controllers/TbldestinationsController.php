@@ -32,16 +32,12 @@ class TbldestinationsController extends AdminController
         });
 
         $grid->column('id', __('Id'));
-<<<<<<< HEAD
         $grid->column('brand', __('Brand'))->display(function ($brand) {
             return strtoupper($brand);
         })->filter([
             'Morrisons' => 'MORRISONS',
             'MS' => 'MS',
         ]);
-=======
-        $grid->column('brand', __('Brand'));
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
         $grid->column('depo_name', __('Depo Name'));
         $grid->column('depo_code', __('Depo Code'));
         $grid->column('depo_type', __('Depo Type'));

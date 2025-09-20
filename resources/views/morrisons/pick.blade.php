@@ -42,7 +42,7 @@
             </option>
             @endforeach
         </select>
-        <input type="text" name="ponumber" id="ponumber" value="{{ old('PoNumber', session('PoNumber')) }}" readonly />
+        <input type="text" name="ponumber" id="ponumber" value="{{ old('ponumber', session('ponumber')) }}" readonly />
 
         <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -65,61 +65,53 @@
     </form>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Restore username and depo from localStorage if available
-        const usernameInput = document.getElementById('username');
-        const depoSelect = document.getElementById('depo');
-        const poNumberInput = document.getElementById('ponumber');
-        if(localStorage.getItem('username')) {
-            usernameInput.value = localStorage.getItem('username');
-        }
-        if(localStorage.getItem('depo')) {
-            depoSelect.value = localStorage.getItem('depo');
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    const usernameInput = document.getElementById('username');
+    const depoSelect = document.getElementById('depo');
+    const dueDateInput = document.getElementById('duedate');
+    const poNumberInput = document.getElementById('ponumber'); // Make sure this input exists
 
-        // Save username and depo to localStorage on change
-        usernameInput.addEventListener('change', function() {
-            localStorage.setItem('username', usernameInput.value);
-        });
-        depoSelect.addEventListener('change', function() {
-            localStorage.setItem('depo', depoSelect.value);
-        });
+    // Restore from localStorage
+    if (localStorage.getItem('username')) {
+        usernameInput.value = localStorage.getItem('username');
+    }
+    if (localStorage.getItem('depo')) {
+        depoSelect.value = localStorage.getItem('depo');
+    }
+    if (localStorage.getItem('duedate')) {
+        dueDateInput.value = localStorage.getItem('duedate');
+    }
+    if (localStorage.getItem('ponumber')) {
+        poNumberInput.value = localStorage.getItem('ponumber');
+    }
 
-        // On saveButton click, set hidden fields in the print form
-        const saveButton = document.getElementById('saveButton');
-        const printForm = saveButton.closest('form');
-        if(printForm) {
-            // Add hidden fields for username, depo, and ponumber if not present
-            let hiddenUsername = printForm.querySelector('input[name="username"]');
-            let hiddenDepo = printForm.querySelector('input[name="depo"]');
-            let hiddenPoNumber = printForm.querySelector('input[name="ponumber"]');
-            if(!hiddenUsername) {
-                hiddenUsername = document.createElement('input');
-                hiddenUsername.type = 'hidden';
-                hiddenUsername.name = 'username';
-                printForm.appendChild(hiddenUsername);
+    // Save to localStorage on change
+    usernameInput.addEventListener('change', () => localStorage.setItem('username', usernameInput.value));
+    depoSelect.addEventListener('change', () => localStorage.setItem('depo', depoSelect.value));
+    dueDateInput.addEventListener('change', () => localStorage.setItem('duedate', dueDateInput.value));
+    poNumberInput.addEventListener('change', () => localStorage.setItem('ponumber', poNumberInput.value));
+
+    // Handle "Send to Print" button
+    const printButton = document.getElementById('sendToPrintButton'); // Your print button's ID
+    const printForm = printButton?.closest('form');
+
+    if (printForm) {
+        ['username', 'depo', 'duedate', 'ponumber'].forEach(field => {
+            let input = printForm.querySelector(`input[name="${field}"]`);
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field;
+                printForm.appendChild(input);
             }
-            if(!hiddenDepo) {
-                hiddenDepo = document.createElement('input');
-                hiddenDepo.type = 'hidden';
-                hiddenDepo.name = 'depo';
-                printForm.appendChild(hiddenDepo);
-            }
-            if(!hiddenPoNumber) {
-                hiddenPoNumber = document.createElement('input');
-                hiddenPoNumber.type = 'hidden';
-                hiddenPoNumber.name = 'ponumber';
-                printForm.appendChild(hiddenPoNumber);
-            }
-            saveButton.addEventListener('click', function() {
-                hiddenUsername.value = usernameInput.value;
-                hiddenDepo.value = depoSelect.value;
-                hiddenPoNumber.value = poNumberInput.value;
+
+            printButton.addEventListener('click', () => {
+                input.value = document.getElementById(field)?.value || '';
             });
-        }
-    });
-    </script>
-
+        });
+    }
+});
+</script>
 
    <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
 

@@ -12,6 +12,7 @@ use App\Models\Tbldestinations;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use OpenAdmin\Admin\Widgets\Table;
+use App\Admin\Actions\Item\BatchDeleteByBatchNo;
 
 class MorrisonsTblprintController extends AdminController
 {
@@ -33,7 +34,9 @@ class MorrisonsTblprintController extends AdminController
     $grid->fixHeader();
     $grid->disableActions();
     $grid->disableExport();
-    $grid->disableRowSelector();
+    $grid->disableCreateButton();
+    $grid->disableFilter();
+    //$grid->disableRowSelector();
 
     // Create a virtual column for grouping: depo + batch_no
      $grid->model()
@@ -41,19 +44,26 @@ class MorrisonsTblprintController extends AdminController
     ->select(
         'morrisons_tblprint.depo',
         'morrisons_tblprint.dueDate',
+        'morrisons_tblprint.batch_no',
         'tbldestinations.depo_name as depoName', // assuming this is the column holding the depo name
         DB::raw('MAX(morrisons_tblprint.id) as id')
     )
-    ->groupBy('morrisons_tblprint.depo', 'tbldestinations.depo_name', 'morrisons_tblprint.dueDate')
+    ->groupBy('morrisons_tblprint.depo', 'tbldestinations.depo_name', 'morrisons_tblprint.dueDate', 'morrisons_tblprint.batch_no')
     ->orderBy('morrisons_tblprint.depo');
 
      $grid->tools(function ($tools) {
         $tools->append("<a href='" . config('app.url') . "/import_morrisons_order' class='btn btn-primary'>Import Order</a>");
         $tools->append('<a href="/admin/truncate-morrisons-order" class="btn btn-danger">Delete Order</a>');
         $tools->append('<a href="/admin/morrisons-orders/printmorrisons" target="_blank" class="btn btn-success">Print Order</a>');
-
      });
 
+     $grid->batchActions(function ($batch) {
+         $batch->add(new BatchDeleteByBatchNo());
+     });
+
+      $grid->column('batch_no', __('<strong>Pallet No</strong>'))->display(function ($batch) {
+        return $batch ?? 'N/A';
+      })->sortable();
       $grid->column('dueDate', __('<strong>Due Date</strong>'))->display(function ($date) {
         return \Carbon\Carbon::parse($date)->format('d-m-Y');
         })->sortable();
@@ -86,11 +96,6 @@ class MorrisonsTblprintController extends AdminController
             'ID', 'Created by', 'Product', 'Due Date', 'Depo', 'BB Date', 'Quantity'
         ], $rows->toArray()));
     });
-
-    // Optional: hide other columns at top level
-    $grid->disableRowSelector();
-    $grid->disableActions();
-    $grid->disableCreateButton();
 
     return $grid;
 }

@@ -100,6 +100,7 @@ Route::post('/stock/scanoutsave', [BarcodeController::class, 'storescanoutsave']
 Route::get('/ms/pick', [App\Http\Controllers\MsOrderController::class, 'scaninForm']);
 Route::post('/ms/pick', [App\Http\Controllers\MsOrderController::class, 'storescanin']);
 Route::post('/ms/picksave', [App\Http\Controllers\MsOrderController::class, 'storescaninsave']);
+//END MS ORDER
 
 //MORRISONS ORDER
 Route::get('/import_morrisons_order', [ImportOrderController::class, 'morrisonsIndex']);
@@ -112,14 +113,12 @@ Route::post('/morrisons/picksave', [App\Http\Controllers\MsOrderController::clas
 Route::post('/morrisons/deletepick/{id}', [App\Http\Controllers\MsOrderController::class, 'deletePick']);
 Route::get('/morrisons/print-picked-morrisons-depo/{depo}', [PrintOrdersController::class, 'PrintPickedMorrisonsDepo']);
 
-//END MS ORDER
-
 Route::get('admin/truncate-morrisons-order', function () {
     DB::table('morrisons_tblorders')->truncate();
     admin_toastr('Table truncated!', 'success');
     return redirect(admin_url('morrisons-tblorders'));
 });
-
+//END MORRISONS ORDER
 
 
 

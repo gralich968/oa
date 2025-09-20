@@ -33,6 +33,9 @@ table, th, td {
 th, td {
   padding: 5px;
 }
+td {
+  font-size: 22px;
+}
 #hp  {
 float: right;
  margin: -100px 0 0 5px;
@@ -42,6 +45,7 @@ float: right;
 </head>
 @php
 use App\Models\MorrisonsTblprint;
+use App\Models\Tblproducts;
 @endphp
 <body>
     @foreach($data as $depo)
@@ -56,24 +60,24 @@ use App\Models\MorrisonsTblprint;
                 </th>
             </tr>
             <tr>
-                <th colspan="2" style="font-size: 150%">
+                <th colspan="2" style="font-size: 180%">
                     <i>{{ $depo['depoName'] }} ({{ $depo['partnerRef'] }})</i>
                 </th>
             </tr>
             <tr>
-                <th>
+                <th style="font-size: 180%">
                     INTO DEPOT DATE
                 </th>
-                <td>
+                <td style="font-size: 180%">
                     {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}
                 </td>
 
             </tr>
             <tr>
-                <td>
-                    <strong>DELIVERY METHOD</strong>
-                </td>
-                <td>
+                <th style="font-size: 180%">
+                    DELIVERY METHOD
+                </th>
+                <td style="font-size: 180%">
                     Chilled (-5° to 0°)
                 </td>
             </tr>
@@ -84,48 +88,50 @@ use App\Models\MorrisonsTblprint;
     <br />
     <br />
 
+
      <table>
         <tbody>
             <tr>
-                <td>
+                <th colspan="2" style="font-size: 180%">
                     <strong>SSCC</strong>
-                </td>
-                <td colspan="3">
-                    (00)050385430000180267
+                </th>
+                <td colspan="2" style="font-size: 180%">
+                    (00){{ $depo['batch_no'] }}
                 </td>
             </tr>
             <tr>
-                <td>
+                <th style="font-size: 180%">
                     <strong>PRODUCT</strong>
-                </td>
-                <td>
+                </th>
+                <td style="font-size: 180%">
                     {{ MorrisonsTblprint::where('depo', $depo['partnerRef'])->groupBy(['batch_no', 'depo'])->count() }}
                 </td>
-                <td>
+                <th style="font-size: 180%">
                     <strong>TOTAL TRAYS</strong>
-                </td>
-                <td>
+                </th>
+                <td style="font-size: 180%">
                    {{ MorrisonsTblprint::where('depo', $depo['partnerRef'])->groupBy(['batch_no', 'depo'])->sum('quantity') }}
                 </td>
             </tr>
         </tbody>
     </table>
     <br />
+
     <table>
         <thead>
             <tr>
-                <th>ORDER ID</th>
-                <th>PRODUCT</th>
+                <th>GTIN</th>
+                <th>PO</th>
+                <th>UPT</th>
                 <th>QTY</th>
-                <th>NOTE</th>
-                <th>SPARE NUMBER 1</th>
+                <th>DESCRIPTION</th>
             @foreach($depo['orders'] as $order)
                 <tr>
-                    <td>{{ $order->id }}</td>
-                    <td>{{ $order->barcode }} - {{ optional($order->product)->description }}</td>
+                    <td>{{ $order->barcode }}</td>
+                    <td>{{ $order->ponumber }}</td>
+                    <td>{{ Tblproducts::where('sku', $order->barcode)->value('upt') }}</td>
                     <td>{{ $order->quantity }}</td>
-                    <td>{{ $order->note }}</td>
-                    <td>{{ $order->sparenumber1 }}</td>
+                    <td>{{ Tblproducts::where('sku', $order->barcode)->value('description') }}</td>
                 </tr>
             @endforeach
         </tbody>

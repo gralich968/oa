@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MorrisonsTblorders;
 use App\Models\MorrisonsTblprint;
+use App\Models\Tblcompany;
 use App\Models\Tbldestinations;
 use App\Models\Tblorder;
 use App\Models\TblpickingsResults;
@@ -207,28 +208,42 @@ public function PrintPickedMorrisonsDepo(Request $request, $depo)
         return $order->dueDate;
     });
 
-    // Prepare data for each dueDate group
-    $data = $groupedOrders->map(function ($ordersGroup, $dueDate) use ($depo, $generatorHTML) {
-        $poNumber = $ordersGroup->first()?->ponumber ?? '000000';
-        $depoName = Tbldestinations::where('depo_code', $depo)->value('depo_name');
-        $desc = Tblproducts::where('sku', $poNumber)->value('description');
-        $companyCode = MorrisonsTblorders::where('partnerRef', $depo)->value('companyCode');
-        $batch = $ordersGroup->first()?->batch_no ?? 'N/A';
-        $dueDate = MorrisonsTblprint::where('depo', $depo)->value('dueDate');
-        $barcode = base64_encode($generatorHTML->getBarcode('400' . $poNumber, $generatorHTML::TYPE_CODE_39));
+   $data = $groupedOrders->map(function ($ordersGroup, $dueDate) use ($depo, $generatorHTML) {
+    $poNumber = $ordersGroup->first()?->ponumber ?? '000000';
+    $depoName = Tbldestinations::where('depo_code', $depo)->value('depo_name');
 
-        return [
-            'orders' => $ordersGroup,
-            'partnerRef' => $depo,
-            'poNumber' => $poNumber,
-            'depoName' => $depoName,
-            'description' => $desc,
-            'dueDate' => $dueDate,
-            'barcode' => $barcode,
-            'batch_no' => $batch,
-            'companyCode' => $companyCode,
-        ];
-    });
+    // Get the barcode from the first order in the group
+   $barcode = $ordersGroup->first()?->barcode;
+
+$product = Tblproducts::join('morrisons_tblprint', 'tblproducts.sku', '=', 'morrisons_tblprint.barcode')
+    ->where('tblproducts.sku', $barcode)
+    ->select('tblproducts.upt', 'tblproducts.description')
+    ->first();
+
+$upt = $product->upt ?? 'N/A';
+$desc = $product->description ?? 'N/A';
+
+    $companyCode = MorrisonsTblorders::where('partnerRef', $depo)->value('companyCode');
+    $batch = $ordersGroup->first()?->batch_no ?? 'N/A';
+    $dueDate = MorrisonsTblprint::where('depo', $depo)->value('dueDate');
+    $companyPrefix = Tblcompany::pluck('company_pref')->first();
+    $barcodeImg = base64_encode($generatorHTML->getBarcode($batch, $generatorHTML::TYPE_CODE_39));
+
+    return [
+        'orders'        => $ordersGroup,
+        'partnerRef'    => $depo,
+        'poNumber'      => $poNumber,
+        'depoName'      => $depoName,
+        'description'   => $desc,
+        'dueDate'       => $dueDate,
+        'barcode'       => $barcodeImg,
+        'batch_no'      => $batch,
+        'product'       => $product,
+        'companyCode'   => $companyCode,
+        'companyPrefix' => $companyPrefix,
+    ];
+});
+
 
     // Render PDF with grouped data
     //dd($data);
