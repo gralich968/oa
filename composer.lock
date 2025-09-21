@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "content-hash": "68dbebcadc4a08ce3a6e1d59686d9dbc",
-=======
-    "content-hash": "4805f8807b7ab50db04be3bf8b1509f3",
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -88,7 +84,6 @@
             "time": "2025-02-13T15:07:54+00:00"
         },
         {
-<<<<<<< HEAD
             "name": "brick/math",
             "version": "0.12.3",
             "source": {
@@ -100,19 +95,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/brick/math/zipball/866551da34e9a618e64a819ee1e01c20d8a588ba",
                 "reference": "866551da34e9a618e64a819ee1e01c20d8a588ba",
-=======
-            "name": "blade-ui-kit/blade-heroicons",
-            "version": "2.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/driesvints/blade-heroicons.git",
-                "reference": "4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/driesvints/blade-heroicons/zipball/4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
-                "reference": "4553b2a1f6c76f0ac7f3bc0de4c0cfa06a097d19",
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
                 "shasum": ""
             },
             "require": {
@@ -270,13 +252,8 @@
             },
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.2",
-<<<<<<< HEAD
                 "phpunit/phpunit": "^10.1",
                 "vimeo/psalm": "6.8.8"
-=======
-                "phpstan/phpstan": "2.1.22",
-                "phpunit/phpunit": "^11.5"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
             },
             "type": "library",
             "autoload": {
@@ -306,11 +283,7 @@
             ],
             "support": {
                 "issues": "https://github.com/brick/math/issues",
-<<<<<<< HEAD
                 "source": "https://github.com/brick/math/tree/0.12.3"
-=======
-                "source": "https://github.com/brick/math/tree/0.14.0"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
             },
             "funding": [
                 {
@@ -318,11 +291,7 @@
                     "type": "github"
                 }
             ],
-<<<<<<< HEAD
             "time": "2025-02-28T13:11:00+00:00"
-=======
-            "time": "2025-08-29T12:40:03+00:00"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -7705,11 +7674,7 @@
                 "shim"
             ],
             "support": {
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/polyfill-php83/tree/v1.32.0"
-=======
-                "source": "https://github.com/symfony/polyfill-php83/tree/v1.33.0"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
             },
             "funding": [
                 {
@@ -8158,11 +8123,7 @@
                 "utf8"
             ],
             "support": {
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/string/tree/v7.3.2"
-=======
-                "source": "https://github.com/symfony/string/tree/v7.3.3"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
             },
             "funding": [
                 {
@@ -8182,7 +8143,6 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2025-07-10T08:47:49+00:00"
         },
         {
@@ -8197,22 +8157,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/translation/zipball/81b48f4daa96272efcce9c7a6c4b58e629df3c90",
                 "reference": "81b48f4daa96272efcce9c7a6c4b58e629df3c90",
-=======
-            "time": "2025-08-25T06:35:40+00:00"
-        },
-        {
-            "name": "symfony/translation",
-            "version": "v7.3.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/translation.git",
-                "reference": "e0837b4cbcef63c754d89a4806575cada743a38d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/e0837b4cbcef63c754d89a4806575cada743a38d",
-                "reference": "e0837b4cbcef63c754d89a4806575cada743a38d",
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
                 "shasum": ""
             },
             "require": {
@@ -8463,7 +8407,6 @@
         },
         {
             "name": "symfony/var-dumper",
-<<<<<<< HEAD
             "version": "v7.3.2",
             "source": {
                 "type": "git",
@@ -8474,18 +8417,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/var-dumper/zipball/53205bea27450dc5c65377518b3275e126d45e75",
                 "reference": "53205bea27450dc5c65377518b3275e126d45e75",
-=======
-            "version": "v7.3.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "34d8d4c4b9597347306d1ec8eb4e1319b1e6986f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/34d8d4c4b9597347306d1ec8eb4e1319b1e6986f",
-                "reference": "34d8d4c4b9597347306d1ec8eb4e1319b1e6986f",
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
                 "shasum": ""
             },
             "require": {
@@ -10081,11 +10012,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-<<<<<<< HEAD
                 "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.33"
-=======
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.36"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
             },
             "funding": [
                 {
@@ -10109,11 +10036,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2025-08-16T05:19:02+00:00"
-=======
-            "time": "2025-09-03T06:24:17+00:00"
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
         },
         {
             "name": "sebastian/cli-parser",
