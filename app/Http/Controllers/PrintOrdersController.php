@@ -251,4 +251,60 @@ $desc = $product->description ?? 'N/A';
     return $pdf->stream('picked-morrisons-depo-' . now() . '.pdf');
 
 }
+
+public function PrintPickedMorrisonsOrder(Request $request)
+{
+    $pickedOrders = MorrisonsTblprint::where('quantity', '>', 0)
+        ->orderBy('depo', 'asc')
+        ->orderBy('dueDate', 'asc')
+        ->get();
+
+    $groupedOrders = $pickedOrders->groupBy(function ($order) {
+        return $order->depo . '|' . $order->dueDate; // Group by depo and dueDate
+    });
+
+    $generatorHTML = new BarcodeGeneratorPNG();
+
+    $data = $groupedOrders->map(function ($ordersGroup, $key) use ($generatorHTML) {
+        list($depo, $dueDate) = explode('|', $key);
+        $poNumber = $ordersGroup->first()?->ponumber ?? '000000';
+        $depoName = Tbldestinations::where('depo_code', $depo)->value('depo_name');
+
+        // Get the barcode from the first order in the group
+       $barcode = $ordersGroup->first()?->barcode;
+
+    $product = Tblproducts::join('morrisons_tblprint', 'tblproducts.sku', '=', 'morrisons_tblprint.barcode')
+        ->where('tblproducts.sku', $barcode)
+        ->select('tblproducts.upt', 'tblproducts.description')
+        ->first();
+
+    $upt = $product->upt ?? 'N/A';
+    $desc = $product->description ?? 'N/A';
+
+        $companyCode = MorrisonsTblorders::where('partnerRef', $depo)->value('companyCode');
+        $batch = $ordersGroup->first()?->batch_no ?? 'N/A';
+        $dueDateFormatted = \Carbon\Carbon::parse($dueDate)->format('d-m-Y');
+        $companyPrefix = Tblcompany::pluck('company_pref')->first();
+        $barcodeImg = base64_encode($generatorHTML->getBarcode($batch, $generatorHTML::TYPE_CODE_39));
+
+        return [
+            'orders'        => $ordersGroup,
+            'partnerRef'    => $depo,
+            'poNumber'      => $poNumber,
+            'depoName'      => $depoName,
+            'description'   => $desc,
+            'dueDate'       => $dueDateFormatted,
+            'barcode'       => $barcodeImg,
+            'batch_no'      => $batch,
+            'product'       => $product,
+            'companyCode'   => $companyCode,
+            'companyPrefix' => $companyPrefix,
+        ];
+    });
+
+    // Render PDF with grouped data
+    $pdf = Pdf::loadView('morrisons.print-picked-morrisons-order', ['data' => $data]);
+    return $pdf->stream('picked-morrisons-order-' . now() . '.pdf');
+}
+
 }

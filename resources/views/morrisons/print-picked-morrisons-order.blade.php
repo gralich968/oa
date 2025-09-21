@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -48,7 +49,10 @@ use App\Models\MorrisonsTblprint;
 use App\Models\Tblproducts;
 @endphp
 <body>
-    @foreach($data as $depo)
+
+@foreach($data as $depo)
+    @for ($i = 0; $i < 2; $i++)
+
 
     <br />
 
@@ -69,7 +73,7 @@ use App\Models\Tblproducts;
                     INTO DEPOT DATE
                 </th>
                 <td style="font-size: 180%">
-                    {{ \Carbon\Carbon::parse($depo['dueDate'])->isoFormat('Do MMMM YYYY, dddd') }}
+                    {{ \Carbon\Carbon::parse($depo['dueDate'])->addDays(1)->isoFormat('Do MMMM YYYY, dddd') }}
                 </td>
 
             </tr>
@@ -140,7 +144,8 @@ use App\Models\Tblproducts;
 @if (!$loop->last)
         <div style="page-break-after: always;"></div>
     @endif
-
+@endfor
     @endforeach
 </body>
 </html>
+

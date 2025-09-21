@@ -52,9 +52,9 @@ class MorrisonsTblprintController extends AdminController
     ->orderBy('morrisons_tblprint.depo');
 
      $grid->tools(function ($tools) {
-        $tools->append("<a href='" . config('app.url') . "/import_morrisons_order' class='btn btn-primary'>Import Order</a>");
-        $tools->append('<a href="/admin/truncate-morrisons-order" class="btn btn-danger">Delete Order</a>');
-        $tools->append('<a href="/admin/morrisons-orders/printmorrisons" target="_blank" class="btn btn-success">Print Order</a>');
+       // $tools->append("<a href='" . config('app.url') . "/import_morrisons_order' class='btn btn-primary'>Import Order</a>");
+        $tools->append('<a href="/admin/truncate-morrisons-tblprint" class="btn btn-danger">Delete All</a>');
+        $tools->append('<a href="/morrisons/print-picked-morrisons-order" target="_blank" class="btn btn-success">Print All</a>');
      });
 
      $grid->batchActions(function ($batch) {

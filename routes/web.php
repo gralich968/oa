@@ -112,11 +112,18 @@ Route::post('/morrisons/pick', [App\Http\Controllers\MsOrderController::class, '
 Route::post('/morrisons/picksave', [App\Http\Controllers\MsOrderController::class, 'storescanmorrisonsave']);
 Route::post('/morrisons/deletepick/{id}', [App\Http\Controllers\MsOrderController::class, 'deletePick']);
 Route::get('/morrisons/print-picked-morrisons-depo/{depo}', [PrintOrdersController::class, 'PrintPickedMorrisonsDepo']);
+Route::get('/morrisons/print-picked-morrisons-order', [PrintOrdersController::class, 'PrintPickedMorrisonsOrder']);
 
 Route::get('admin/truncate-morrisons-order', function () {
     DB::table('morrisons_tblorders')->truncate();
-    admin_toastr('Table truncated!', 'success');
+    admin_toastr('All Morrisons Orders DELETED!', 'success');
     return redirect(admin_url('morrisons-tblorders'));
+});
+
+Route::get('admin/truncate-morrisons-tblprint', function () {
+    DB::table('morrisons_tblprint')->truncate();
+    admin_toastr('Pallets Ready to Print DELETED!', 'success');
+    return redirect(admin_url('morrisons-tblprints'));
 });
 //END MORRISONS ORDER
 

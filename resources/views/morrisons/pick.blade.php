@@ -19,9 +19,6 @@
         @csrf
         <input type="text" name="username" id="username" placeholder="Enter your username" required value="{{ old('username', session('username')) }}" />
         <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
-        <input type="text" name="barcode" id="barcode" placeholder="Scan or enter barcode" autofocus required /><br /><br />
-        <input type="number" name="quantity" id="quantity" placeholder="Enter quantity" min="1" required /><br />
-        <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
         <!-- Hidden unique ID -->
         <input type="hidden" readonly="readonly" name="un" value="<?php echo uniqid(); ?>" />
         <input type="date" name="duedate" id="duedate" required value="{{ \Carbon\Carbon::now()->addDay()->toDateString() }}" />
@@ -42,76 +39,50 @@
             </option>
             @endforeach
         </select>
-        <input type="text" name="ponumber" id="ponumber" value="{{ old('ponumber', session('ponumber')) }}" readonly />
-
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const depoSelect = document.getElementById('depo');
-            const poNumberInput = document.getElementById('ponumber');
-            function updatePoNumber() {
-            const selected = depoSelect.options[depoSelect.selectedIndex];
-            poNumberInput.value = selected.getAttribute('data-ponumber') || '';
-            }
-            depoSelect.addEventListener('change', updatePoNumber);
-            // Set on load if already selected
-            updatePoNumber();
-        });
-        </script>
+        <input type="number" name="ponumber" id="ponumber" value="{{ old('ponumber', session('ponumber')) }}" readonly required/>
+        <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
+        <label for="barcodes">Scan or Enter Barcode:</label><br />
+        <input type="text" name="barcode" id="barcode" placeholder="Scan or enter barcode" autofocus required /><br /><br />
+        <input type="number" name="quantity" id="quantity" placeholder="Enter quantity" min="1" required /><br /><br />
         <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
         <label for="bbdate">BB Date:</label>
         <input type="date" name="bbdate" id="bbdate" required />
         <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
-        <button type="submit" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded">Close Pallet</button>
-    </form>
-
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const usernameInput = document.getElementById('username');
+        <button type="submit" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded">DONE</button>
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
     const depoSelect = document.getElementById('depo');
-    const dueDateInput = document.getElementById('duedate');
-    const poNumberInput = document.getElementById('ponumber'); // Make sure this input exists
+    const ponumberInput = document.getElementById('ponumber');
+    const closePalletBtn = document.getElementById('closePallet');
 
-    // Restore from localStorage
-    if (localStorage.getItem('username')) {
-        usernameInput.value = localStorage.getItem('username');
-    }
-    if (localStorage.getItem('depo')) {
-        depoSelect.value = localStorage.getItem('depo');
-    }
-    if (localStorage.getItem('duedate')) {
-        dueDateInput.value = localStorage.getItem('duedate');
-    }
-    if (localStorage.getItem('ponumber')) {
-        poNumberInput.value = localStorage.getItem('ponumber');
+    // Restore ponumber if available
+    if (sessionStorage.getItem('ponumber')) {
+        ponumberInput.value = sessionStorage.getItem('ponumber');
     }
 
-    // Save to localStorage on change
-    usernameInput.addEventListener('change', () => localStorage.setItem('username', usernameInput.value));
-    depoSelect.addEventListener('change', () => localStorage.setItem('depo', depoSelect.value));
-    dueDateInput.addEventListener('change', () => localStorage.setItem('duedate', dueDateInput.value));
-    poNumberInput.addEventListener('change', () => localStorage.setItem('ponumber', poNumberInput.value));
+    function updatePoNumber() {
+        const selected = depoSelect.options[depoSelect.selectedIndex];
+        ponumberInput.value = selected.getAttribute('data-ponumber') || '';
+        sessionStorage.setItem('ponumber', ponumberInput.value);
+    }
 
-    // Handle "Send to Print" button
-    const printButton = document.getElementById('sendToPrintButton'); // Your print button's ID
-    const printForm = printButton?.closest('form');
+    depoSelect.addEventListener('change', updatePoNumber);
 
-    if (printForm) {
-        ['username', 'depo', 'duedate', 'ponumber'].forEach(field => {
-            let input = printForm.querySelector(`input[name="${field}"]`);
-            if (!input) {
-                input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = field;
-                printForm.appendChild(input);
-            }
+    // Save manually entered ponumber
+    ponumberInput.addEventListener('input', function() {
+        sessionStorage.setItem('ponumber', ponumberInput.value);
+    });
 
-            printButton.addEventListener('click', () => {
-                input.value = document.getElementById(field)?.value || '';
-            });
+    // Clear ponumber when closing pallet
+    if (closePalletBtn) {
+        closePalletBtn.addEventListener('click', function() {
+            sessionStorage.removeItem('ponumber');
+            ponumberInput.value = '';
         });
     }
 });
 </script>
+    </form>
 
    <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
 
@@ -188,41 +159,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <form method="POST" action="{{ url('/morrisons/picksave') }}">
     @csrf
-    <button type="submit" id="saveButton" class="btn btn-success">Send to Print</button>
+    <button type="submit" id="closePallet" class="btn btn-success">Close Pallet</button>
 </form>
 
 
 <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
     </center>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const textarea = document.getElementById('barcodes');
+   <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const usernameInput = document.getElementById('username');
+    const depoSelect = document.getElementById('depo');
+    const dueDateInput = document.getElementById('duedate');
+    const ponumberInput = document.getElementById('ponumber'); // Make sure this input exists
 
-    textarea.addEventListener('input', function() {
-        // Split on newlines OR spaces
-        let lines = textarea.value
-            //.split(/[\r\n\s]+/)           // split by newline or space
-            .map(line => line.trim())     // trim spaces
-            .filter(line => line !== ''); // remove empty entries
+    // Restore from localStorage
+    if (localStorage.getItem('username')) {
+        usernameInput.value = localStorage.getItem('username');
+    }
+    if (localStorage.getItem('depo')) {
+        depoSelect.value = localStorage.getItem('depo');
+    }
+    if (localStorage.getItem('duedate')) {
+        dueDateInput.value = localStorage.getItem('duedate');
+    }
+    if (localStorage.getItem('ponumber')) {
+        ponumberInput.value = localStorage.getItem('ponumber');
+    }
 
-        let seen = new Set();
-        let uniqueLines = [];
+    // Save to localStorage on change
+    usernameInput.addEventListener('change', () => localStorage.setItem('username', usernameInput.value));
+    depoSelect.addEventListener('change', () => localStorage.setItem('depo', depoSelect.value));
+    dueDateInput.addEventListener('change', () => localStorage.setItem('duedate', dueDateInput.value));
+    ponumberInput.addEventListener('change', () => localStorage.setItem('ponumber', ponumberInput.value));
 
-        lines.forEach(line => {
-            if (!seen.has(line)) {
-                seen.add(line);
-                uniqueLines.push(line);
-            } else {
-                // Notify user about duplicate
-                console.warn(`Duplicate barcode blocked: ${line}`);
-                // Optional: alert user
-                // alert(`Duplicate barcode detected: ${line}`);
+    // Handle "Send to Print" button
+    const printButton = document.getElementById('closePallet'); // Your print button's ID
+    const printForm = printButton?.closest('form');
+
+    if (printForm) {
+        ['username', 'depo', 'duedate', 'ponumber'].forEach(field => {
+            let input = printForm.querySelector(`input[name="${field}"]`);
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = field;
+                printForm.appendChild(input);
             }
-        });
 
-        // Put only unique barcodes back into textarea, one per line
-        textarea.value = uniqueLines.join("\n");
-    });
+            printButton.addEventListener('click', () => {
+                input.value = document.getElementById(field)?.value || '';
+            });
+        });
+    }
 });
 </script>
 
