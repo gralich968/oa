@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Picking List</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
+        body { font-family: Arial, sans-serif; font-size: 12px; margin-top: 10px;}
         h2 { text-align: center; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #000; padding: 6px; text-align: center; }

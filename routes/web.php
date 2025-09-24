@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\PrintOrdersController;
 use App\Http\Controllers\ImportPickingsController;
 use App\Http\Controllers\BarcodeController;
+use App\Http\Controllers\MsOrderController;
 
 
 
@@ -107,10 +108,10 @@ Route::get('/import_morrisons_order', [ImportOrderController::class, 'morrisonsI
 Route::post('/import_morrisons_order/import', [ImportOrderController::class, 'importMorrisons']);
 Route::get('/admin/morrisons-orders/printmorrisons', [PrintOrdersController::class, 'printMorrisonsOrders']);
 Route::get('/admin/orders/print-partner-morrisons/{depo}', [PrintOrdersController::class, 'printPartnerMorrisons']);
-Route::get('/morrisons/pick', [App\Http\Controllers\MsOrderController::class, 'scanMorrisonsForm']);
-Route::post('/morrisons/pick', [App\Http\Controllers\MsOrderController::class, 'storeMorrisonsscan']);
-Route::post('/morrisons/picksave', [App\Http\Controllers\MsOrderController::class, 'storescanmorrisonsave']);
-Route::post('/morrisons/deletepick/{id}', [App\Http\Controllers\MsOrderController::class, 'deletePick']);
+Route::get('/morrisons/pick', [MsOrderController::class, 'scanMorrisonsForm']);
+Route::post('/morrisons/pick', [MsOrderController::class, 'storeMorrisonsscan']);
+Route::post('/morrisons/picksave', [MsOrderController::class, 'storescanmorrisonsave']);
+Route::post('/morrisons/deletepick/{id}', [MsOrderController::class, 'deletePick']);
 Route::get('/morrisons/print-picked-morrisons-depo/{depo}', [PrintOrdersController::class, 'PrintPickedMorrisonsDepo']);
 Route::get('/morrisons/print-picked-morrisons-order', [PrintOrdersController::class, 'PrintPickedMorrisonsOrder']);
 

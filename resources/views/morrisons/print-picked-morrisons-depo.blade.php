@@ -8,6 +8,7 @@
         body {
             font-family: 'Arial, sans-serif';
             font-size: 16px;
+            margin-top: 55px;
         }
         .container {
             margin: 0 auto;

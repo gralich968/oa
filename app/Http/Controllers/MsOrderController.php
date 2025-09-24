@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Mstblpicked;
-use App\Models\Morrisonstblpicked;
+use App\Models\MorrisonsTblpicked;
 use App\Models\Morrisonstblorders;
 use App\Models\Tbldestinations;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,7 @@ class MsOrderController extends Controller
 {
     public function scaninForm() {
     $mstblpicked = Mstblpicked::all();
-    $depos = Tbldestinations::all()->where('is_active', 1);
+    $depos = Tbldestinations::all()->where('is_active', 1)->where('brand', 'MandS');
     return view('ms.pick', compact('mstblpicked', 'depos'));
 }
 
@@ -47,9 +47,9 @@ public function storescanin(Request $request) {
 
     //MORRISONS ORDER
     public function scanMorrisonsForm() {
-        $MorrisonsTblpicked = MorrisonsTblpicked::all();
+        $morrisonstblpicked = MorrisonsTblpicked::all();
         $depos = Tbldestinations::all()->where('is_active', 1)->where('brand', 'Morrisons');
-        return view('morrisons.pick', compact('MorrisonsTblpicked', 'depos'));
+        return view('morrisons.pick', compact('morrisonstblpicked', 'depos'));
     }
 
 public function storeMorrisonsscan(Request $request) {

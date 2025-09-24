@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <td style = "text-align: center"> ACTION</td>
 	</tr>
 
-  @foreach ($MorrisonsTblpicked as $index => $row)
+  @foreach ($morrisonstblpicked as $index => $row)
   @php
         $sku = $row->barcode;
         $duedate = \Carbon\Carbon::parse($row->duedate)->format('d-m-Y');

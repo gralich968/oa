@@ -7,6 +7,7 @@
         body {
             font-family: 'Arial, sans-serif';
             font-size: 16px;
+            margin-top: 10px;
         }
         .container {
             margin: 0 auto;

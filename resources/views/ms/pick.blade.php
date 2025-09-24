@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -131,6 +130,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-=======
-Dziala Droga!!!
->>>>>>> 74e963bcc8f2bf9698d0bed58c9d3b0b21d67cbe
