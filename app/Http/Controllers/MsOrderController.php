@@ -17,8 +17,9 @@ class MsOrderController extends Controller
     return view('ms.pick', compact('mstblpicked', 'depos'));
 }
 
-
+// MS STORE SCAN ORDER
 public function storescanin(Request $request) {
+
     $request->validate([
         'barcodes' => 'required|string',
         'username' => 'required|string',
@@ -41,6 +42,59 @@ public function storescanin(Request $request) {
 }
 
     public function storescaninsave(Request $request) {
+         $companyPrefix = DB::table('tblcompany')->where('id', 1)->value('company_pref'); // Replace with actual logic
+
+    // Generate a unique serial reference (9 digits, zero-padded)
+    $serialReference = str_pad(random_int(0, 999999999), 9, '0', STR_PAD_LEFT);
+     function generateSSCC($companyPrefix, $serialReference, $extensionDigit = '0') {
+        $base = $extensionDigit . $companyPrefix . $serialReference;
+        $checkDigit = calculateCheckDigit($base);
+        return $base . $checkDigit;
+    }
+
+    // Modulo 10 check digit calculation
+    function calculateCheckDigit($number) {
+        $sum = 0;
+        $length = strlen($number);
+        for ($i = $length - 1; $i >= 0; $i--) {
+            $digit = intval($number[$i]);
+            $sum += (($length - $i) % 2 === 0) ? $digit * 3 : $digit;
+        }
+        $mod = $sum % 10;
+        return $mod === 0 ? 0 : 10 - $mod;
+    }
+
+    // Generate SSCC
+    $sscc = generateSSCC($companyPrefix, $serialReference);
+  // Generate one unique number for this batch
+    $batchNumber = $sscc; // uniqid('batch_');
+
+    // Get all rows from morrisons_tblpicked
+    $rows = DB::table('morrisons_tblpicked')->get();
+
+
+    // Map rows to new array for morrisons_tblprint
+    $insertData = $rows->map(function ($row) use ($batchNumber) {
+        return [
+            'barcode'     => $row->barcode,
+            'depo'        => $row->depo,
+            'duedate'     => $row->duedate,
+            'bbdate'      => $row->bbdate,
+            'quantity'    => $row->quantity,
+            'username'    => $row->username,
+            'ponumber'    => $row->ponumber,
+            'un'          => $row->un,
+            'batch_no'    => $batchNumber, // same for all rows
+            'created_at'  => now(),
+            'updated_at'  => now(),
+        ];
+    })->toArray();
+
+    // Insert into morrisons_tblprint
+    DB::table('morrisons_tblprint')->insert($insertData);
+    DB::table('morrisons_tblpicked')->truncate();
+
+    return redirect()->back()->with('success', "Copied " . count($insertData) . " rows with batch number {$batchNumber}");
 
     }
 

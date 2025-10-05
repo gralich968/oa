@@ -1,5 +1,6 @@
 <?php
 
+use App\Admin\Controllers\MorrisonsStockController;
 use Illuminate\Routing\Router;
 use App\Admin\Controllers\TblinController;
 use App\Admin\Controllers\TblstockinController;
@@ -43,5 +44,7 @@ Route::group([
     //MORRISONS
     $router->resource('morrisons-tblorders', MorrisonsTblordersController::class);
     $router->resource('morrisons-tblprints', MorrisonsTblprintController::class);
+    $router->resource('morrisons-stock', MorrisonsStockController::class);
+    
 
 });

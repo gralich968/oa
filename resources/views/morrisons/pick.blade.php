@@ -3,8 +3,14 @@
 <head>
     <title>Scan Barcode</title>
    <!-- <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script> -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
    <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/global_assets/js/plugins/visualization/d3/d3.min.js"></script>
 </head>
 <body>
     <center><h1>MORRISONS PICK</h1>
@@ -48,7 +54,7 @@
         <label for="bbdate">BB Date:</label>
         <input type="date" name="bbdate" id="bbdate" required />
         <hr style="width: 50%; height: 4px; background-color: #86b300; border: none; margin: 20px auto;">
-        <button type="submit" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded">DONE</button>
+        <button type="submit" class="flex items-center px-4 py-2 bg-blue-800 text-gray rounded">DONE</button>
         <script>
 document.addEventListener('DOMContentLoaded', function() {
     const depoSelect = document.getElementById('depo');

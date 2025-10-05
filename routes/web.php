@@ -13,12 +13,14 @@ use App\Http\Controllers\PrintOrdersController;
 use App\Http\Controllers\ImportPickingsController;
 use App\Http\Controllers\BarcodeController;
 use App\Http\Controllers\MsOrderController;
+use App\Http\Controllers\MorrisonsStockController;
 
 
 
 Admin::routes();
 
 Route::get('/', [AuthController::class, 'login']);
+Route::get('/scan', [AuthController::class, 'scan']);
 Route::get('pdf', [PDFController::class, 'viewPdf']);
 Route::get('pdfin', [PDFController::class, 'generatePDF']);
 Route::get('excel-export', [TblstockinController::class, 'excel_export']);
@@ -114,6 +116,9 @@ Route::post('/morrisons/picksave', [MsOrderController::class, 'storescanmorrison
 Route::post('/morrisons/deletepick/{id}', [MsOrderController::class, 'deletePick']);
 Route::get('/morrisons/print-picked-morrisons-depo/{depo}', [PrintOrdersController::class, 'PrintPickedMorrisonsDepo']);
 Route::get('/morrisons/print-picked-morrisons-order', [PrintOrdersController::class, 'PrintPickedMorrisonsOrder']);
+Route::get('/morrisons/stock', [MorrisonsStockController::class, 'StockIndex']);
+Route::post('/morrisons/stock', [MorrisonsStockController::class, 'StockIndex'])->name('morrisons.stock');
+Route::get('/morrisons/print-stock', [PrintOrdersController::class, 'PrintStock']);
 
 Route::get('admin/truncate-morrisons-order', function () {
     DB::table('morrisons_tblorders')->truncate();
@@ -125,6 +130,12 @@ Route::get('admin/truncate-morrisons-tblprint', function () {
     DB::table('morrisons_tblprint')->truncate();
     admin_toastr('Pallets Ready to Print DELETED!', 'success');
     return redirect(admin_url('morrisons-tblprints'));
+});
+
+Route::get('admin/truncate-morrisons-stock', function () {
+    DB::table('morrisons_stocks')->truncate();
+    admin_toastr('Table MORRISONS STOCK Cleared!', 'success');
+    return redirect(admin_url('morrisons-stock'));
 });
 //END MORRISONS ORDER
 

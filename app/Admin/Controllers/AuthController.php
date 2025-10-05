@@ -10,4 +10,9 @@ class AuthController extends BaseAuthController
     {
 		return view('admin.login');
 		}
+
+    public function scan()
+    {
+      return view('scan');
+    }
 }

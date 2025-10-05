@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MorrisonsStock;
 use App\Models\MorrisonsTblorders;
 use App\Models\MorrisonsTblprint;
 use App\Models\Tblcompany;
@@ -13,6 +14,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Vtiful\Kernel\Format;
 
 class PrintOrdersController extends Controller
 {
@@ -306,5 +308,24 @@ public function PrintPickedMorrisonsOrder(Request $request)
     $pdf = Pdf::loadView('morrisons.print-picked-morrisons-order', ['data' => $data]);
     return $pdf->stream('picked-morrisons-order-' . now() . '.pdf');
 }
+
+public function PrintStock(Request $request)
+{
+    $data = MorrisonsStock::select(
+                'morrisons_stocks.id',
+                'morrisons_stocks.barcode',
+                'morrisons_stocks.qty',
+                'morrisons_stocks.bbdate',
+                'tblproducts.description'
+            )
+            ->leftJoin('tblproducts', 'morrisons_stocks.barcode', '=', 'tblproducts.sku')
+            ->get();
+
+    $currentDate = now()->format('d-m-Y, H:i');     
+
+    $pdf = PDF::loadView('morrisons.print-stock', compact('data', 'currentDate'));
+    return $pdf->stream('stock-list.pdf');
+}
+
 
 }
