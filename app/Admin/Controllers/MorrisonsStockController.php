@@ -37,7 +37,7 @@ class MorrisonsStockController extends AdminController
     return $this->barcode ? 'SKU-' . $this->barcode : 'N/A';
 });
         $grid->column('bbdate', 'BB Date')->display(function ($date) {
-        return \Carbon\Carbon::parse($date)->format('d-m-Y');
+        return Carbon::parse($date)->format('d-m-Y');
         })->sortable();
         $grid->column('qty', 'Quantity')->sortable();
         $grid->column('updated_at', 'Last Updated')->display(function ($date) {
@@ -52,4 +52,29 @@ class MorrisonsStockController extends AdminController
 
         return $grid;
     }
+ protected function detail($id)
+    {
+        $show = new Show(MorrisonsStock::findOrFail($id));
+
+        $show->field('id', __('Id'));
+        $show->field('barcode', __('Barcode'));
+        $show->field('bbdate', __('BB Date'));
+        $show->field('qty', __('Quantity'));
+        $show->field('created_at', __('Created at'))->dateFormat('d-m-Y H:i:s');
+        $show->field('updated_at', __('Updated at'))->dateFormat('d-m-Y H:i:s');
+
+        return $show;
+    }
+
+    protected function form()
+    {
+        $form = new Form(new MorrisonsStock());
+
+        $form->text('barcode', __('Barcode'));
+        $form->text('bbdate', __('BB Date'));
+        $form->number('qty', __('Quantity'));
+
+        return $form;
+    }
+
 }

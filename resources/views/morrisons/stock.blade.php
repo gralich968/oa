@@ -46,7 +46,7 @@ form div input {
         <br />
         <div class="mb-3">
             <label for="bbdate" class="form-label" style="color: teal;font-weight: 800;">BB Date:</label>
-            <input type="date" class="form-control" id="bbdate" name="bbdate" />
+            <input type="date" class="form-control" id="bbdate" name="bbdate" required/>
         </div>
         <br />
          <div class="mb-3">
@@ -54,7 +54,7 @@ form div input {
             <input type="number" class="form-control" id="qty" name="qty"  placeholder="Enter quantity" min="1" required />
         </div>
         <br />
-        <button type="submit" class="flex items-center px-4 py-2 bg-green-600 text-green rounded">Scan</button>
+        <button type="submit" class="flex items-center px-4 py-2 bg-green-600 text-green rounded">SAVE</button>
     </form>
 
     @if(session('success'))

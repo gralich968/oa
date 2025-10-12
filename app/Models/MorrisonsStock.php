@@ -13,3 +13,4 @@ class MorrisonsStock extends Model
         'qty',
     ];
 }
+

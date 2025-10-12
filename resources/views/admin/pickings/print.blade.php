@@ -13,6 +13,7 @@
 </head>
 <body>
     <h2>Picking List</h2>
+    <p>Created at: {{ date('d-m-Y H:i') }}</p>
     <table>
         <thead>
             <tr>
